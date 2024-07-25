@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>音頻混音器游戲</title>
+    <link rel="stylesheet" href="index.css">
+</head>
+<body>
+    <div class="mixer-container">
+        <h1>音頻混音器游戲</h1>
+        <div class="transport-controls">
+            <button id="playPauseBtn">播放/暫停</button>
+            <input type="range" id="masterVolume" min="0" max="1" step="0.1" value="1">
+            <label for="masterVolume">主音量</label>
+            <input type="range" id="timeSlider" min="0" max="100" value="0">
+            <label for="timeSlider">時間軸</label>
+        </div>
+        <div class="faders-container">
+            <div class="fader" id="vocal-fader">
+                <input type="range" min="0" max="1" step="0.01" value="0.5" orient="vertical">
+                <label>人聲</label>
+            </div>
+            <div class="fader" id="guitar-fader">
+                <input type="range" min="0" max="1" step="0.01" value="0.5" orient="vertical">
+                <label>吉他</label>
+            </div>
+            <div class="fader" id="piano-fader">
+                <input type="range" min="0" max="1" step="0.01" value="0.5" orient="vertical">
+                <label>鋼琴</label>
+            </div>
+            <div class="fader" id="other-fader">
+                <input type="range" min="0" max="1" step="0.01" value="0.5" orient="vertical">
+                <label>其他</label>
+            </div>
+            <div class="fader" id="bass-fader">
+                <input type="range" min="0" max="1" step="0.01" value="0.5" orient="vertical">
+                <label>貝斯</label>
+            </div>
+            <div class="fader" id="drum-fader">
+                <input type="range" min="0" max="1" step="0.01" value="0.5" orient="vertical">
+                <label>鼓</label>
+            </div>
+        </div>
+        <div class="game-controls">
+            <button id="submitBtn">提交</button>
+            <div id="score">分數: <span>0</span></div>
+        </div>
+    </div>
+    <script src="index.js"></script>
+</body>
+</html>
