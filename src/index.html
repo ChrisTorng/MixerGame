@@ -9,12 +9,16 @@
 <body>
     <div class="mixer-container">
         <h1>音頻混音器游戲</h1>
-        <div class="transport-controls">
-            <button id="playPauseBtn">載入</button>
-            <input type="range" id="masterVolume" min="0" max="1" step="0.1" value="1">
-            <label for="masterVolume">主音量</label>
-            <input type="range" id="timeSlider" min="0" max="100" value="0">
-            <label for="timeSlider">時間軸</label>
+        <div class="controls-container">
+            <div class="transport-controls">
+                <button id="playPauseBtn">載入</button>
+                <input type="range" id="timeSlider" min="0" max="100" value="0">
+                <label for="timeSlider">時間軸</label>
+            </div>
+            <div class="master-volume">
+                <input type="range" id="masterVolume" min="0" max="1" step="0.01" value="1" orient="vertical">
+                <label for="masterVolume">主音量</label>
+            </div>
         </div>
         <div class="faders-container">
             <div class="fader" id="vocal-fader">
