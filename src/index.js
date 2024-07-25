@@ -1,6 +1,8 @@
 // 音頻混音器游戲
 
 // 音軌設置
+//let tracksBaseUrl = '../../UpLifeSongs/以斯拉 - 至高全能神的榮光';
+let tracksBaseUrl = 'https://christorng.github.io/UpLifeSongs/以斯拉 - 至高全能神的榮光';
 const tracks = ['vocal', 'guitar', 'piano', 'other', 'bass', 'drum'];
 let audioContext, audioSources = {}, gainNodes = {}, analyserNodes = {};
 let masterGainNode, randomGains = {};
@@ -8,6 +10,7 @@ let masterGainNode, randomGains = {};
 // 初始化 Web Audio API
 function initAudio() {
     audioContext = new (window.AudioContext || window.webkitAudioContext)();
+    audioContext.suspend(); // 初始時暫停 AudioContext
     masterGainNode = audioContext.createGain();
     masterGainNode.connect(audioContext.destination);
 
@@ -23,7 +26,7 @@ function initAudio() {
 // 加載音頻文件
 async function loadAudio() {
     for (let track of tracks) {
-        const response = await fetch(`src/${track}.mp3`);
+        const response = await fetch(`${tracksBaseUrl}/${track}.mp3`);
         const arrayBuffer = await response.arrayBuffer();
         const audioBuffer = await audioContext.decodeAudioData(arrayBuffer);
         audioSources[track] = audioContext.createBufferSource();
@@ -36,14 +39,16 @@ async function loadAudio() {
 // 播放/暫停
 let isPlaying = false;
 function togglePlayPause() {
+    if (audioContext.state === 'suspended') {
+        audioContext.resume();
+    }
+
     if (isPlaying) {
-        tracks.forEach(track => audioSources[track].stop());
+        audioContext.suspend();
     } else {
+        audioContext.resume();
         tracks.forEach(track => {
-            audioSources[track] = audioContext.createBufferSource();
-            audioSources[track].buffer = audioSources[track].buffer;
-            audioSources[track].connect(gainNodes[track]);
-            audioSources[track].loop = true;
+            if (!audioSources[track].buffer) return;
             audioSources[track].start();
         });
     }
@@ -63,11 +68,12 @@ function setTrackVolume(track, volume) {
 
 // 設置播放位置
 function setPlaybackPosition(position) {
+    if (!audioSources[tracks[0]].buffer) return;
     const duration = audioSources[tracks[0]].buffer.duration;
     const newTime = position * duration / 100;
     
     if (isPlaying) {
-        togglePlayPause();
+        audioContext.suspend();
     }
     
     tracks.forEach(track => {
@@ -81,6 +87,9 @@ function setPlaybackPosition(position) {
         }
     });
     
+    if (isPlaying) {
+        audioContext.resume();
+    }
     isPlaying = true;
     document.getElementById('playPauseBtn').textContent = '暫停';
 }
@@ -103,7 +112,12 @@ async function initGame() {
     await loadAudio();
     
     // 設置 UI 事件監聽器
-    document.getElementById('playPauseBtn').addEventListener('click', togglePlayPause);
+    document.getElementById('playPauseBtn').addEventListener('click', () => {
+        if (audioContext.state === 'suspended') {
+            audioContext.resume();
+        }
+        togglePlayPause();
+    });
     document.getElementById('masterVolume').addEventListener('input', (e) => setMasterVolume(e.target.value));
     document.getElementById('timeSlider').addEventListener('input', (e) => setPlaybackPosition(e.target.value));
     

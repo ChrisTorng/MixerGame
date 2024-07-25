@@ -45,10 +45,19 @@ h1 {
 }
 
 .fader input[type="range"] {
-    -webkit-appearance: slider-vertical;
+    writing-mode: vertical-lr;
+    direction: rtl;
     width: 50px;
     height: 200px;
     margin: 0 10px;
+}
+
+/* 標準化的垂直滑塊樣式 */
+@supports (-moz-appearance:none) {
+    .fader input[type="range"] {
+        writing-mode: vertical-lr;
+        direction: rtl;
+    }
 }
 
 .fader label {
