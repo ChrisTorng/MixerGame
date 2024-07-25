@@ -7,6 +7,7 @@ const tracks = ['vocal', 'guitar', 'piano', 'other', 'bass', 'drum'];
 let audioContext, audioSources = {}, gainNodes = {}, analyserNodes = {};
 let masterGainNode, randomGains = {};
 let isAudioInitialized = false;
+let isAudioLoaded = false;
 
 // 初始化 Web Audio API
 function initAudio() {
@@ -25,20 +26,31 @@ function initAudio() {
     });
 
     isAudioInitialized = true;
-    loadAudio();
 }
 
 // 加載音頻文件
 async function loadAudio() {
+    const playPauseBtn = document.getElementById('playPauseBtn');
+    playPauseBtn.textContent = '載入中';
+    playPauseBtn.disabled = true;
+
     for (let track of tracks) {
-        const response = await fetch(`${tracksBaseUrl}/${track}.mp3`);
-        const arrayBuffer = await response.arrayBuffer();
-        const audioBuffer = await audioContext.decodeAudioData(arrayBuffer);
-        audioSources[track] = audioContext.createBufferSource();
-        audioSources[track].buffer = audioBuffer;
-        audioSources[track].connect(gainNodes[track]);
-        audioSources[track].loop = true;
+        try {
+            const response = await fetch(`${tracksBaseUrl}/${track}.mp3`);
+            const arrayBuffer = await response.arrayBuffer();
+            const audioBuffer = await audioContext.decodeAudioData(arrayBuffer);
+            audioSources[track] = audioContext.createBufferSource();
+            audioSources[track].buffer = audioBuffer;
+            audioSources[track].connect(gainNodes[track]);
+            audioSources[track].loop = true;
+        } catch (error) {
+            console.error(`Error loading audio for ${track}:`, error);
+        }
     }
+
+    isAudioLoaded = true;
+    playPauseBtn.innerHTML = '&#9658;'; // 播放圖示
+    playPauseBtn.disabled = false;
 }
 
 // 播放/暫停
@@ -46,18 +58,21 @@ let isPlaying = false;
 function togglePlayPause() {
     if (!isAudioInitialized) {
         initAudio();
+        loadAudio();
         return;
     }
 
+    if (!isAudioLoaded) return;
+
     if (isPlaying) {
         tracks.forEach(track => {
-            if (audioSources[track].buffer) {
+            if (audioSources[track] && audioSources[track].buffer) {
                 audioSources[track].stop();
             }
         });
     } else {
         tracks.forEach(track => {
-            if (audioSources[track].buffer) {
+            if (audioSources[track] && audioSources[track].buffer) {
                 audioSources[track] = audioContext.createBufferSource();
                 audioSources[track].buffer = audioSources[track].buffer;
                 audioSources[track].connect(gainNodes[track]);
@@ -67,7 +82,7 @@ function togglePlayPause() {
         });
     }
     isPlaying = !isPlaying;
-    document.getElementById('playPauseBtn').textContent = isPlaying ? '暫停' : '播放';
+    document.getElementById('playPauseBtn').innerHTML = isPlaying ? '&#10074;&#10074;' : '&#9658;'; // 暫停圖示 : 播放圖示
 }
 
 // 設置總音量
@@ -84,20 +99,20 @@ function setTrackVolume(track, volume) {
 
 // 設置播放位置
 function setPlaybackPosition(position) {
-    if (!isAudioInitialized || !audioSources[tracks[0]].buffer) return;
+    if (!isAudioInitialized || !isAudioLoaded) return;
     const duration = audioSources[tracks[0]].buffer.duration;
     const newTime = position * duration / 100;
     
     if (isPlaying) {
         tracks.forEach(track => {
-            if (audioSources[track].buffer) {
+            if (audioSources[track] && audioSources[track].buffer) {
                 audioSources[track].stop();
             }
         });
     }
     
     tracks.forEach(track => {
-        if (audioSources[track].buffer) {
+        if (audioSources[track] && audioSources[track].buffer) {
             audioSources[track] = audioContext.createBufferSource();
             audioSources[track].buffer = audioSources[track].buffer;
             audioSources[track].connect(gainNodes[track]);
@@ -107,12 +122,12 @@ function setPlaybackPosition(position) {
     });
     
     isPlaying = true;
-    document.getElementById('playPauseBtn').textContent = '暫停';
+    document.getElementById('playPauseBtn').innerHTML = '&#10074;&#10074;'; // 暫停圖示
 }
 
 // 計算分數
 function calculateScore() {
-    if (!isAudioInitialized) return 0;
+    if (!isAudioInitialized || !isAudioLoaded) return 0;
     let totalDifference = 0;
     tracks.forEach(track => {
         const userGain = gainNodes[track].gain.value;
