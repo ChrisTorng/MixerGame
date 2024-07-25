@@ -1,7 +1,7 @@
 // 音頻混音器游戲
 
 // 音軌設置
-const isLocalDevelopment = window.location.protocol === 'file:';
+const isLocalDevelopment = window.location.protocol !== 'file:';
 let tracksBaseUrl = isLocalDevelopment
     ? '../../UpLifeSongs/以斯拉 - 至高全能神的榮光'
     : 'https://christorng.github.io/UpLifeSongs/以斯拉 - 至高全能神的榮光';
@@ -40,7 +40,15 @@ async function loadAudio() {
         await Promise.all(tracks.map(async (track) => {
             let audioData;
             if (isLocalDevelopment) {
-                audioData = await fetch(`${tracksBaseUrl}/${track}.mp3`).then(response => response.arrayBuffer());
+                // 對於本地開發，使用 XMLHttpRequest 來避免 CORS 問題
+                audioData = await new Promise((resolve, reject) => {
+                    const xhr = new XMLHttpRequest();
+                    xhr.open('GET', `${tracksBaseUrl}/${track}.mp3`, true);
+                    xhr.responseType = 'arraybuffer';
+                    xhr.onload = () => resolve(xhr.response);
+                    xhr.onerror = reject;
+                    xhr.send();
+                });
             } else {
                 const response = await fetch(`${tracksBaseUrl}/${track}.mp3`);
                 audioData = await response.arrayBuffer();

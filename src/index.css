@@ -7,18 +7,15 @@ body {
     margin: 0;
     background-color: #f0f0f0;
 }
-
 .mixer-container {
     background-color: #333;
     color: white;
     padding: 20px;
     border-radius: 10px;
     box-shadow: 0 0 10px rgba(0,0,0,0.5);
-}
-
-h1 {
-    text-align: center;
-    margin-bottom: 20px;
+    display: flex;
+    flex-direction: column;
+    height: 80vh;
 }
 
 .controls-container {
@@ -32,29 +29,10 @@ h1 {
     flex-grow: 1;
 }
 
-.transport-controls input[type="range"] {
-    width: 100%;
-}
-
-.master-volume {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    margin-left: 20px;
-}
-
-.master-volume input[type="range"] {
-    writing-mode: vertical-lr;
-    direction: rtl;
-    width: 50px;
-    height: 200px;
-    margin: 0;
-}
-
 .faders-container {
     display: flex;
     justify-content: space-around;
-    margin-bottom: 20px;
+    flex-grow: 1;
 }
 
 .fader {
@@ -63,12 +41,21 @@ h1 {
     align-items: center;
 }
 
-.fader input[type="range"] {
+.fader input[type="range"],
+.master-volume input[type="range"] {
     writing-mode: vertical-lr;
     direction: rtl;
     width: 50px;
     height: 200px;
     margin: 0 10px;
+}
+
+.master-volume {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: flex-end;
+    margin-top: auto;
 }
 
 .fader label {
