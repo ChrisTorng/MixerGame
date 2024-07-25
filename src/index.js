@@ -6,11 +6,13 @@ let tracksBaseUrl = 'https://christorng.github.io/UpLifeSongs/以斯拉 - 至高
 const tracks = ['vocal', 'guitar', 'piano', 'other', 'bass', 'drum'];
 let audioContext, audioSources = {}, gainNodes = {}, analyserNodes = {};
 let masterGainNode, randomGains = {};
+let isAudioInitialized = false;
 
 // 初始化 Web Audio API
 function initAudio() {
+    if (isAudioInitialized) return;
+    
     audioContext = new (window.AudioContext || window.webkitAudioContext)();
-    audioContext.suspend(); // 初始時暫停 AudioContext
     masterGainNode = audioContext.createGain();
     masterGainNode.connect(audioContext.destination);
 
@@ -21,6 +23,9 @@ function initAudio() {
         analyserNodes[track].connect(masterGainNode);
         randomGains[track] = Math.random() * 0.8 + 0.2; // 隨機音量在 0.2 到 1 之間
     });
+
+    isAudioInitialized = true;
+    loadAudio();
 }
 
 // 加載音頻文件
@@ -39,17 +44,26 @@ async function loadAudio() {
 // 播放/暫停
 let isPlaying = false;
 function togglePlayPause() {
-    if (audioContext.state === 'suspended') {
-        audioContext.resume();
+    if (!isAudioInitialized) {
+        initAudio();
+        return;
     }
 
     if (isPlaying) {
-        audioContext.suspend();
-    } else {
-        audioContext.resume();
         tracks.forEach(track => {
-            if (!audioSources[track].buffer) return;
-            audioSources[track].start();
+            if (audioSources[track].buffer) {
+                audioSources[track].stop();
+            }
+        });
+    } else {
+        tracks.forEach(track => {
+            if (audioSources[track].buffer) {
+                audioSources[track] = audioContext.createBufferSource();
+                audioSources[track].buffer = audioSources[track].buffer;
+                audioSources[track].connect(gainNodes[track]);
+                audioSources[track].loop = true;
+                audioSources[track].start();
+            }
         });
     }
     isPlaying = !isPlaying;
@@ -58,27 +72,32 @@ function togglePlayPause() {
 
 // 設置總音量
 function setMasterVolume(volume) {
+    if (!isAudioInitialized) return;
     masterGainNode.gain.setValueAtTime(volume, audioContext.currentTime);
 }
 
 // 設置單軌音量
 function setTrackVolume(track, volume) {
+    if (!isAudioInitialized) return;
     gainNodes[track].gain.setValueAtTime(volume, audioContext.currentTime);
 }
 
 // 設置播放位置
 function setPlaybackPosition(position) {
-    if (!audioSources[tracks[0]].buffer) return;
+    if (!isAudioInitialized || !audioSources[tracks[0]].buffer) return;
     const duration = audioSources[tracks[0]].buffer.duration;
     const newTime = position * duration / 100;
     
     if (isPlaying) {
-        audioContext.suspend();
+        tracks.forEach(track => {
+            if (audioSources[track].buffer) {
+                audioSources[track].stop();
+            }
+        });
     }
     
     tracks.forEach(track => {
         if (audioSources[track].buffer) {
-            audioSources[track].stop();
             audioSources[track] = audioContext.createBufferSource();
             audioSources[track].buffer = audioSources[track].buffer;
             audioSources[track].connect(gainNodes[track]);
@@ -87,15 +106,13 @@ function setPlaybackPosition(position) {
         }
     });
     
-    if (isPlaying) {
-        audioContext.resume();
-    }
     isPlaying = true;
     document.getElementById('playPauseBtn').textContent = '暫停';
 }
 
 // 計算分數
 function calculateScore() {
+    if (!isAudioInitialized) return 0;
     let totalDifference = 0;
     tracks.forEach(track => {
         const userGain = gainNodes[track].gain.value;
@@ -107,17 +124,9 @@ function calculateScore() {
 }
 
 // 初始化遊戲
-async function initGame() {
-    initAudio();
-    await loadAudio();
-    
+function initGame() {
     // 設置 UI 事件監聽器
-    document.getElementById('playPauseBtn').addEventListener('click', () => {
-        if (audioContext.state === 'suspended') {
-            audioContext.resume();
-        }
-        togglePlayPause();
-    });
+    document.getElementById('playPauseBtn').addEventListener('click', togglePlayPause);
     document.getElementById('masterVolume').addEventListener('input', (e) => setMasterVolume(e.target.value));
     document.getElementById('timeSlider').addEventListener('input', (e) => setPlaybackPosition(e.target.value));
     
