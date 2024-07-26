@@ -10,6 +10,9 @@ let audioContext, audioBuffers = {}, audioSources = {}, gainNodes = {}, analyser
 let masterGainNode, randomGains = {};
 let isAudioInitialized = false;
 let isAudioLoaded = false;
+let isAnswerMode = false;
+let playerSettings = {};
+let correctSettings = {};
 
 // 初始化 Web Audio API
 function initAudio() {
@@ -121,6 +124,11 @@ function setMasterVolume(volume) {
     masterGainNode.gain.setValueAtTime(volume, audioContext.currentTime);
 }
 
+// GAIN 值轉換為推桿值
+function gainToFader(gain) {
+    return Math.log(gain / 0.25) / Math.log(16);
+}
+
 // 將線性推桿值轉換為對數增益值
 function faderToGain(faderValue) {
     // 將 0-1 的推桿值映射到 0.25-4 的對數增益範圍
@@ -131,7 +139,7 @@ function faderToGain(faderValue) {
 function setTrackVolume(track, faderValue) {
     if (!isAudioInitialized) return;
     const gainValue = faderToGain(faderValue);
-    gainNodes[track].gain.setValueAtTime(gainValue * randomGains[track], audioContext.currentTime);
+    gainNodes[track].gain.setValueAtTime(gainValue, audioContext.currentTime);
 }
 
 // 設置播放位置
@@ -162,7 +170,7 @@ function calculateScore() {
     if (!isAudioInitialized || !isAudioLoaded) return 0;
     let totalDifference = 0;
     tracks.forEach(track => {
-        const faderValue = document.getElementById(`${track}-fader`).querySelector('input').value;
+        const faderValue = playerSettings[track] || 0.5;
         const userGain = faderToGain(faderValue);
         const targetGain = 1 / randomGains[track];
         // 使用對數比較來計算差異
@@ -183,12 +191,44 @@ function initGame() {
     
     tracks.forEach(track => {
         const fader = document.getElementById(`${track}-fader`).querySelector('input');
-        fader.addEventListener('input', (e) => setTrackVolume(track, e.target.value));
+        fader.addEventListener('input', (e) => {
+            if (!isAnswerMode) {
+                setTrackVolume(track, e.target.value);
+                playerSettings[track] = e.target.value;
+            }
+        });
     });
     
     document.getElementById('submitBtn').addEventListener('click', () => {
         const score = calculateScore();
         document.querySelector('#score span').textContent = score;
+        document.getElementById('answerToggle').disabled = false;
+        document.getElementById('answerToggle').checked = true;
+        toggleAnswerMode(true);
+    });
+
+    document.getElementById('answerToggle').addEventListener('change', (e) => {
+        toggleAnswerMode(e.target.checked);
+    });
+}
+
+// 切換答案模式
+function toggleAnswerMode(isAnswer) {
+    isAnswerMode = isAnswer;
+    const toggleLabel = document.getElementById('toggleLabel');
+    toggleLabel.textContent = isAnswer ? '正確答案' : '玩家設置';
+
+    tracks.forEach(track => {
+        const fader = document.getElementById(`${track}-fader`).querySelector('input');
+        if (isAnswer) {
+            correctSettings[track] = 1 / randomGains[track];
+            fader.value = gainToFader(correctSettings[track]);
+            setTrackVolume(track, fader.value);
+        } else {
+            fader.value = playerSettings[track] || 0.5;
+            setTrackVolume(track, fader.value);
+        }
+        fader.disabled = isAnswer;
     });
 }
 
