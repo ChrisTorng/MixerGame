@@ -24,7 +24,8 @@ function initAudio() {
         analyserNodes[track] = audioContext.createAnalyser();
         gainNodes[track].connect(analyserNodes[track]);
         analyserNodes[track].connect(masterGainNode);
-        randomGains[track] = Math.random() * 0.8 + 0.2; // 隨機音量在 0.2 到 1 之間
+        // 隨機 GAIN 範圍從 0.5 到 2
+        randomGains[track] = Math.exp(Math.random() * Math.log(4)) / 2;
         
         // 設置推桿初始位置為中間（0.5）
         const fader = document.getElementById(`${track}-fader`).querySelector('input');
@@ -120,11 +121,16 @@ function setMasterVolume(volume) {
     masterGainNode.gain.setValueAtTime(volume, audioContext.currentTime);
 }
 
+// 將線性推桿值轉換為對數增益值
+function faderToGain(faderValue) {
+    // 將 0-1 的推桿值映射到 0.25-4 的對數增益範圍
+    return 0.25 * Math.pow(16, faderValue);
+}
+
 // 設置單軌音量
 function setTrackVolume(track, faderValue) {
     if (!isAudioInitialized) return;
-    // 將推桿值（0-1）映射到增益範圍（0.1-1.9）
-    const gainValue = 0.1 + (faderValue * 1.8);
+    const gainValue = faderToGain(faderValue);
     gainNodes[track].gain.setValueAtTime(gainValue * randomGains[track], audioContext.currentTime);
 }
 
@@ -157,11 +163,14 @@ function calculateScore() {
     let totalDifference = 0;
     tracks.forEach(track => {
         const faderValue = document.getElementById(`${track}-fader`).querySelector('input').value;
-        const userGain = 0.1 + (faderValue * 1.8); // 與 setTrackVolume 中的計算相同
-        const targetGain = 1 / randomGains[track]; // 目標增益是隨機增益的倒數
-        totalDifference += Math.abs(userGain - targetGain);
+        const userGain = faderToGain(faderValue);
+        const targetGain = 1 / randomGains[track];
+        // 使用對數比較來計算差異
+        const logDifference = Math.abs(Math.log2(userGain) - Math.log2(targetGain));
+        totalDifference += logDifference;
     });
-    const score = Math.max(0, 100 - (totalDifference / tracks.length) * 50); // 調整分數計算以提供更大的範圍
+    // 調整分數計算以提供合理的範圍
+    const score = Math.max(0, 100 - (totalDifference / tracks.length) * 25);
     return Math.round(score);
 }
 
