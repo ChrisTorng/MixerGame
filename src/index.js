@@ -1,4 +1,4 @@
-// 音頻混音器游戲
+// 音頻混音器遊戲
 
 // 音軌設置
 const isLocalDevelopment = window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1';
@@ -26,10 +26,10 @@ function initAudio() {
         analyserNodes[track].connect(masterGainNode);
         randomGains[track] = Math.random() * 0.8 + 0.2; // 隨機音量在 0.2 到 1 之間
         
-        // Set initial fader position to match random gain
+        // 設置推桿初始位置為中間（0.5）
         const fader = document.getElementById(`${track}-fader`).querySelector('input');
-        fader.value = randomGains[track];
-        setTrackVolume(track, randomGains[track]);
+        fader.value = 0.5;
+        setTrackVolume(track, 0.5);
     });
 
     isAudioInitialized = true;
@@ -52,9 +52,9 @@ async function loadAudio() {
         isAudioLoaded = true;
         playPauseBtn.innerHTML = '&#9658;'; // 播放圖示
         playPauseBtn.disabled = false;
-        console.log('All audio tracks loaded successfully');
+        console.log('所有音軌已成功載入');
     } catch (error) {
-        console.error('Error loading audio:', error);
+        console.error('載入音頻時發生錯誤:', error);
         playPauseBtn.textContent = '載入失敗';
         playPauseBtn.disabled = false;
     }
@@ -121,9 +121,11 @@ function setMasterVolume(volume) {
 }
 
 // 設置單軌音量
-function setTrackVolume(track, volume) {
+function setTrackVolume(track, faderValue) {
     if (!isAudioInitialized) return;
-    gainNodes[track].gain.setValueAtTime(volume * (1 / randomGains[track]), audioContext.currentTime);
+    // 將推桿值（0-1）映射到增益範圍（0.1-1.9）
+    const gainValue = 0.1 + (faderValue * 1.8);
+    gainNodes[track].gain.setValueAtTime(gainValue * randomGains[track], audioContext.currentTime);
 }
 
 // 設置播放位置
@@ -154,11 +156,12 @@ function calculateScore() {
     if (!isAudioInitialized || !isAudioLoaded) return 0;
     let totalDifference = 0;
     tracks.forEach(track => {
-        const userGain = gainNodes[track].gain.value;
-        const targetGain = 1; // We want to achieve the original volume, which is represented by 1
+        const faderValue = document.getElementById(`${track}-fader`).querySelector('input').value;
+        const userGain = 0.1 + (faderValue * 1.8); // 與 setTrackVolume 中的計算相同
+        const targetGain = 1 / randomGains[track]; // 目標增益是隨機增益的倒數
         totalDifference += Math.abs(userGain - targetGain);
     });
-    const score = Math.max(0, 100 - (totalDifference / tracks.length) * 100);
+    const score = Math.max(0, 100 - (totalDifference / tracks.length) * 50); // 調整分數計算以提供更大的範圍
     return Math.round(score);
 }
 
