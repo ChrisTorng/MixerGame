@@ -201,22 +201,31 @@ function initGame() {
     
     document.getElementById('submitBtn').addEventListener('click', () => {
         const score = calculateScore();
-        document.querySelector('#score span').textContent = score;
-        document.getElementById('answerToggle').disabled = false;
-        document.getElementById('answerToggle').checked = true;
-        toggleAnswerMode(true);
+        document.getElementById('scoreDisplay').style.display = 'block';
+        document.querySelector('#scoreDisplay span').textContent = score;
+        document.getElementById('resultControls').style.display = 'flex';
+        document.getElementById('answerToggle').checked = false;
+        toggleAnswerMode(false);
     });
 
     document.getElementById('answerToggle').addEventListener('change', (e) => {
         toggleAnswerMode(e.target.checked);
+    });
+
+    document.getElementById('playerSettingLabel').addEventListener('click', () => {
+        document.getElementById('answerToggle').checked = false;
+        toggleAnswerMode(false);
+    });
+
+    document.getElementById('correctAnswerLabel').addEventListener('click', () => {
+        document.getElementById('answerToggle').checked = true;
+        toggleAnswerMode(true);
     });
 }
 
 // 切換答案模式
 function toggleAnswerMode(isAnswer) {
     isAnswerMode = isAnswer;
-    const toggleLabel = document.getElementById('toggleLabel');
-    toggleLabel.textContent = isAnswer ? '正確答案' : '玩家設置';
 
     tracks.forEach(track => {
         const fader = document.getElementById(`${track}-fader`).querySelector('input');

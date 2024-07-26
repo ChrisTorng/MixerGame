@@ -20,61 +20,18 @@ body {
     box-shadow: 0 0 10px rgba(0,0,0,0.5);
     display: flex;
     flex-direction: column;
-    height: 90vh;
-    width: 90vw;
-}
-
-.controls-container {
-    display: flex;
-    justify-content: space-between;
-    align-items: flex-start;
-    margin-bottom: 20px;
+    width: 90%;
+    max-width: 800px;
+    margin: 20px auto;
 }
 
 .transport-controls {
-    flex-grow: 1;
-}
-
-.faders-container {
     display: flex;
-    justify-content: space-around;
-    flex-grow: 1;
-}
-
-.fader {
-    display: flex;
-    flex-direction: column;
     align-items: center;
+    margin-bottom: 20px;
 }
 
-.fader input[type="range"],
-.master-volume input[type="range"] {
-    writing-mode: vertical-lr;
-    direction: rtl;
-    width: 50px;
-    height: 200px;
-    margin: 0 10px;
-}
-
-.master-volume {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: flex-end;
-    margin-top: auto;
-}
-
-.fader label {
-    margin-top: 10px;
-}
-
-.game-controls {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-}
-
-button {
+#playPauseBtn {
     background-color: #4CAF50;
     border: none;
     color: white;
@@ -83,21 +40,139 @@ button {
     text-decoration: none;
     display: inline-block;
     font-size: 16px;
-    margin: 4px 2px;
+    margin-right: 10px;
     cursor: pointer;
     border-radius: 5px;
 }
 
-#score {
+#timeSlider {
+    flex-grow: 1;
+}
+
+.faders-container {
+    display: flex;
+    justify-content: space-around;
+    flex-wrap: wrap;
+}
+
+.fader {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    margin: 0 10px 20px;
+}
+
+.fader input[type="range"] {
+    writing-mode: vertical-lr;
+    direction: rtl;
+    width: 20px;
+    height: 150px;
+    margin: 0 10px;
+}
+
+.fader label {
+    margin-top: 10px;
+    text-align: center;
+}
+
+.game-controls {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    flex-wrap: wrap;
+    margin-top: 20px;
+}
+
+#submitBtn {
+    background-color: #4CAF50;
+    border: none;
+    color: white;
+    padding: 10px 20px;
+    text-align: center;
+    text-decoration: none;
+    display: inline-block;
+    font-size: 16px;
+    cursor: pointer;
+    border-radius: 5px;
+}
+
+#resultControls {
+    display: flex;
+    align-items: center;
+    margin: 10px 0;
+}
+
+.switch {
+    position: relative;
+    display: inline-block;
+    width: 60px;
+    height: 34px;
+    margin: 0 10px;
+}
+
+.switch input {
+    opacity: 0;
+    width: 0;
+    height: 0;
+}
+
+.slider {
+    position: absolute;
+    cursor: pointer;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background-color: #ccc;
+    transition: .4s;
+    border-radius: 34px;
+}
+
+.slider:before {
+    position: absolute;
+    content: "";
+    height: 26px;
+    width: 26px;
+    left: 4px;
+    bottom: 4px;
+    background-color: white;
+    transition: .4s;
+    border-radius: 50%;
+}
+
+input:checked + .slider {
+    background-color: #2196F3;
+}
+
+input:checked + .slider:before {
+    transform: translateX(26px);
+}
+
+#scoreDisplay {
     font-size: 18px;
     font-weight: bold;
 }
 
-/* 用於垂直範圍輸入的樣式 */
-input[type="range"][orient="vertical"] {
-    writing-mode: vertical-lr;
-    direction: rtl;
-    width: 50px;
-    height: 200px;
-    padding: 0 5px;
+@media (max-width: 600px) {
+    .mixer-container {
+        padding: 10px;
+        width: 95%;
+    }
+
+    .faders-container {
+        justify-content: center;
+    }
+
+    .fader {
+        margin: 0 5px 10px;
+    }
+
+    .game-controls {
+        flex-direction: column;
+        align-items: stretch;
+    }
+
+    #submitBtn, #resultControls, #scoreDisplay {
+        margin-bottom: 10px;
+    }
 }

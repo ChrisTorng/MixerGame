@@ -48,14 +48,15 @@
 
     <div class="game-controls">
         <button id="submitBtn">提交</button>
-        <div class="toggle-container">
+        <div id="resultControls" style="display: none;">
+            <span id="playerSettingLabel">玩家設置</span>
             <label class="switch">
-                <input type="checkbox" id="answerToggle" disabled>
-                <span class="slider round"></span>
+                <input type="checkbox" id="answerToggle">
+                <span class="slider"></span>
             </label>
-            <span id="toggleLabel">玩家設置</span>
+            <span id="correctAnswerLabel">正確答案</span>
         </div>
-        <div id="score">分數: <span>0</span></div>
+        <div id="scoreDisplay" style="display: none;">分數: <span>0</span></div>
     </div>
 </div>
     <script src="index.js"></script>
