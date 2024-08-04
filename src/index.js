@@ -13,6 +13,8 @@ let isAudioLoaded = false;
 let isAnswerMode = false;
 let playerSettings = {};
 let correctSettings = {};
+let isSubmitted = false;
+let isComparisonMode = false;
 
 // 初始化 Web Audio API
 function initAudio() {
@@ -202,18 +204,18 @@ function initGame() {
     });
 
     document.getElementById('modeToggleCheckbox').addEventListener('change', (e) => {
-        toggleOriginalMixMode(e.target.checked);
+        toggleComparisonMode(e.target.checked);
     });
 
     document.getElementById('submitBtn').addEventListener('click', () => {
         const score = calculateScore();
         document.getElementById('scoreDisplay').style.display = 'block';
         document.querySelector('#scoreDisplay span').textContent = score;
-        document.getElementById('resultControls').style.display = 'flex';
-        document.getElementById('modeToggle').style.display = 'none';
-        document.getElementById('answerToggle').checked = false;
-        document.getElementById('originalMixLabel').textContent = '正確答案';
-        toggleAnswerMode(false);
+        document.getElementById('comparisonLabel').textContent = '正確答案';
+        isSubmitted = true;
+        // 重置切換狀態
+        document.getElementById('modeToggleCheckbox').checked = false;
+        toggleComparisonMode(false);
     });
 
     document.getElementById('answerToggle').addEventListener('change', (e) => {
@@ -231,34 +233,20 @@ function initGame() {
     });
 }
 
-function toggleOriginalMixMode(isOriginal) {
-    isOriginalMixMode = isOriginal;
+function toggleComparisonMode(isComparison) {
+    isComparisonMode = isComparison;
     tracks.forEach(track => {
         const fader = document.getElementById(`${track}-fader`).querySelector('input');
-        if (isOriginal) {
+        if (isComparison) {
             setTrackVolume(track, gainToFader(1 / randomGains[track]));
+            if (isSubmitted) {
+                fader.value = gainToFader(1 / randomGains[track]);
+            }
         } else {
-            setTrackVolume(track, fader.value);
-        }
-        fader.disabled = isOriginal;
-    });
-}
-
-// 切換答案模式
-function toggleAnswerMode(isAnswer) {
-    isAnswerMode = isAnswer;
-
-    tracks.forEach(track => {
-        const fader = document.getElementById(`${track}-fader`).querySelector('input');
-        if (isAnswer) {
-            correctSettings[track] = 1 / randomGains[track];
-            fader.value = gainToFader(correctSettings[track]);
-            setTrackVolume(track, fader.value);
-        } else {
+            setTrackVolume(track, playerSettings[track] || 0.5);
             fader.value = playerSettings[track] || 0.5;
-            setTrackVolume(track, fader.value);
         }
-        fader.disabled = isAnswer;
+        fader.disabled = isComparison;
     });
 }
 
