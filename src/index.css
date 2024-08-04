@@ -96,16 +96,15 @@ body {
     border-radius: 5px;
 }
 
-#resultControls {
+.toggle-container {
     display: flex;
     align-items: center;
-    margin: 10px 0;
 }
 
 .switch {
     position: relative;
     display: inline-block;
-    width: 60px;
+    width: 80px;
     height: 34px;
     margin: 0 10px;
 }

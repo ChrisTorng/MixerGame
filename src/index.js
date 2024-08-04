@@ -209,27 +209,13 @@ function initGame() {
 
     document.getElementById('submitBtn').addEventListener('click', () => {
         const score = calculateScore();
-        document.getElementById('scoreDisplay').style.display = 'block';
-        document.querySelector('#scoreDisplay span').textContent = score;
+        document.getElementById('scoreDisplay').style.visibility = 'visible';
+        document.querySelector('#scoreDisplay').textContent = score;
         document.getElementById('comparisonLabel').textContent = '正確答案';
         isSubmitted = true;
         // 重置切換狀態
         document.getElementById('modeToggleCheckbox').checked = false;
         toggleComparisonMode(false);
-    });
-
-    document.getElementById('answerToggle').addEventListener('change', (e) => {
-        toggleAnswerMode(e.target.checked);
-    });
-
-    document.getElementById('playerSettingLabel').addEventListener('click', () => {
-        document.getElementById('answerToggle').checked = false;
-        toggleAnswerMode(false);
-    });
-
-    document.getElementById('correctAnswerLabel').addEventListener('click', () => {
-        document.getElementById('answerToggle').checked = true;
-        toggleAnswerMode(true);
     });
 }
 
