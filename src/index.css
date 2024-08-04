@@ -176,3 +176,13 @@ input:checked + .slider:before {
         margin-bottom: 10px;
     }
 }
+
+.toggle-container {
+    display: flex;
+    align-items: center;
+    margin-bottom: 10px;
+}
+
+.toggle-container span {
+    margin: 0 10px;
+}

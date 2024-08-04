@@ -182,6 +182,8 @@ function calculateScore() {
     return Math.round(score);
 }
 
+let isOriginalMixMode = false;
+
 // 初始化遊戲
 function initGame() {
     // 設置 UI 事件監聽器
@@ -198,13 +200,19 @@ function initGame() {
             }
         });
     });
-    
+
+    document.getElementById('modeToggleCheckbox').addEventListener('change', (e) => {
+        toggleOriginalMixMode(e.target.checked);
+    });
+
     document.getElementById('submitBtn').addEventListener('click', () => {
         const score = calculateScore();
         document.getElementById('scoreDisplay').style.display = 'block';
         document.querySelector('#scoreDisplay span').textContent = score;
         document.getElementById('resultControls').style.display = 'flex';
+        document.getElementById('modeToggle').style.display = 'none';
         document.getElementById('answerToggle').checked = false;
+        document.getElementById('originalMixLabel').textContent = '正確答案';
         toggleAnswerMode(false);
     });
 
@@ -220,6 +228,19 @@ function initGame() {
     document.getElementById('correctAnswerLabel').addEventListener('click', () => {
         document.getElementById('answerToggle').checked = true;
         toggleAnswerMode(true);
+    });
+}
+
+function toggleOriginalMixMode(isOriginal) {
+    isOriginalMixMode = isOriginal;
+    tracks.forEach(track => {
+        const fader = document.getElementById(`${track}-fader`).querySelector('input');
+        if (isOriginal) {
+            setTrackVolume(track, gainToFader(1 / randomGains[track]));
+        } else {
+            setTrackVolume(track, fader.value);
+        }
+        fader.disabled = isOriginal;
     });
 }
 

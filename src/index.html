@@ -47,9 +47,17 @@
     </div>
 
     <div class="game-controls">
+        <div id="modeToggle" class="toggle-container">
+            <span>目前設置</span>
+            <label class="switch">
+                <input type="checkbox" id="modeToggleCheckbox">
+                <span class="slider"></span>
+            </label>
+            <span id="originalMixLabel">原版混音</span>
+        </div>
         <button id="submitBtn">提交</button>
         <div id="resultControls" style="display: none;">
-            <span id="playerSettingLabel">玩家設置</span>
+            <span>玩家設置</span>
             <label class="switch">
                 <input type="checkbox" id="answerToggle">
                 <span class="slider"></span>
