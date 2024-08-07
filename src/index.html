@@ -7,58 +7,73 @@
     <link rel="stylesheet" href="index.css">
 </head>
 <body>
-<div class="mixer-container">
-    <h1>混音器游戲</h1>
+    <div class="mixer-container">
+        <h1>混音器游戲</h1>
 
-    <div class="transport-controls">
-        <button id="playPauseBtn">載入</button>
-        <input type="range" id="timeSlider" min="0" max="100" value="0">
-    </div>
+        <div class="transport-controls">
+            <button id="playPauseBtn">載入</button>
+            <input type="range" id="timeSlider" min="0" max="100" value="0">
+        </div>
 
-    <div class="faders-container">
-        <div id="vocal-fader" class="fader">
-            <input type="range" min="0" max="1" step="0.01" value="0.5" orient="vertical">
-            <label>人聲</label>
+        <div class="faders-container">
+            <div id="vocal-fader" class="fader">
+                <input type="range" min="0" max="1" step="0.01" value="0.5" orient="vertical">
+                <label>人聲</label>
+            </div>
+            <div id="guitar-fader" class="fader">
+                <input type="range" min="0" max="1" step="0.01" value="0.5" orient="vertical">
+                <label>吉他</label>
+            </div>
+            <div id="piano-fader" class="fader">
+                <input type="range" min="0" max="1" step="0.01" value="0.5" orient="vertical">
+                <label>鋼琴</label>
+            </div>
+            <div id="other-fader" class="fader">
+                <input type="range" min="0" max="1" step="0.01" value="0.5" orient="vertical">
+                <label>其他</label>
+            </div>
+            <div id="bass-fader" class="fader">
+                <input type="range" min="0" max="1" step="0.01" value="0.5" orient="vertical">
+                <label>貝斯</label>
+            </div>
+            <div id="drum-fader" class="fader">
+                <input type="range" min="0" max="1" step="0.01" value="0.5" orient="vertical">
+                <label>鼓</label>
+            </div>
+            <div class="fader master-volume">
+                <input type="range" min="0" max="1" step="0.01" value="1" orient="vertical" id="masterVolume">
+                <label>主音量</label>
+            </div>
         </div>
-        <div id="guitar-fader" class="fader">
-            <input type="range" min="0" max="1" step="0.01" value="0.5" orient="vertical">
-            <label>吉他</label>
-        </div>
-        <div id="piano-fader" class="fader">
-            <input type="range" min="0" max="1" step="0.01" value="0.5" orient="vertical">
-            <label>鋼琴</label>
-        </div>
-        <div id="other-fader" class="fader">
-            <input type="range" min="0" max="1" step="0.01" value="0.5" orient="vertical">
-            <label>其他</label>
-        </div>
-        <div id="bass-fader" class="fader">
-            <input type="range" min="0" max="1" step="0.01" value="0.5" orient="vertical">
-            <label>貝斯</label>
-        </div>
-        <div id="drum-fader" class="fader">
-            <input type="range" min="0" max="1" step="0.01" value="0.5" orient="vertical">
-            <label>鼓</label>
-        </div>
-        <div class="fader master-volume">
-            <input type="range" min="0" max="1" step="0.01" value="1" orient="vertical" id="masterVolume">
-            <label>主音量</label>
-        </div>
-    </div>
 
-    <div class="game-controls">
-        <button id="submitBtn">提交</button>
-        <div id="modeToggle" class="toggle-container">
-            <span id="currentSettingLabel">目前設置</span>
-            <label class="switch">
-                <input type="checkbox" id="modeToggleCheckbox">
-                <span class="slider"></span>
-            </label>
-            <span id="comparisonLabel">原版混音</span>
+        <div class="game-controls">
+            <button id="submitBtn">提交</button>
+            <div id="modeToggle" class="toggle-container">
+                <span id="currentSettingLabel">目前設置</span>
+                <label class="switch">
+                    <input type="checkbox" id="modeToggleCheckbox">
+                    <span class="slider"></span>
+                </label>
+                <span id="comparisonLabel">原版混音</span>
+            </div>
+            <div>分數: <span id="scoreDisplay" style="visibility: hidden;">00</span></div>
         </div>
-        <div>分數: <span id="scoreDisplay" style="visibility: hidden;">00</span></div>
     </div>
-</div>
-    <script src="../dist/bundle.js"></script>
+    <script>
+        (function() {
+            var script = document.createElement('script');
+            var isLocalhost = window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1';
+            script.src = !isLocalhost ? 'http://localhost:9000/bundle.js' : '../dist/bundle.min.js';
+            script.onerror = function() {
+                console.error('無法載入腳本：' + script.src);
+                if (isLocalhost) {
+                    alert('無法載入開發版本腳本。請確保你已運行 "npm start" 或 "npm run watch"。');
+                } else {
+                    alert('無法載入生產版本腳本。請確保你已運行 "npm run build" 並正確部署了文件。');
+                }
+            };
+            document.body.appendChild(script);
+        })();
+    </script>
 </body>
 </html>
