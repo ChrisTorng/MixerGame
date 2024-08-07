@@ -63,7 +63,7 @@
         (function() {
             var script = document.createElement('script');
             var isLocalhost = window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1';
-            script.src = !isLocalhost ? 'http://localhost:9000/bundle.js' : '../dist/bundle.min.js';
+            script.src = isLocalhost ? 'http://localhost:9000/bundle.js' : '../dist/bundle.min.js';
             script.onerror = function() {
                 console.error('無法載入腳本：' + script.src);
                 if (isLocalhost) {
