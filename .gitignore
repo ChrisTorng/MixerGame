@@ -1,3 +1,4 @@
+node_modules/**
 UpLifeSongs/**/*.mp3
 UpLifeSongs/**/*.png
 claude_chats/**
