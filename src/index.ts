@@ -1,3 +1,5 @@
+import VolumeSlider from "./volume-slider";
+
 // 定義類型
 type TrackName = 'vocal' | 'guitar' | 'piano' | 'other' | 'bass' | 'drum';
 type AudioNodes = {
@@ -61,12 +63,17 @@ class MixerGame {
         this.masterGainNode = this.audioContext.createGain();
         this.randomGains = {} as RandomGains;
 
+        // 確保 VolumeSlider 已註冊
+        if (!customElements.get('volume-slider')) {
+            customElements.define('volume-slider', VolumeSlider);
+        }
+
         this.initGame();
     }
 
     private initAudio(): void {
         if (this.isAudioInitialized) return;
-        
+
         this.masterGainNode.connect(this.audioContext.destination);
 
         this.tracks.forEach(track => {
@@ -75,7 +82,7 @@ class MixerGame {
             this.gainNodes[track].connect(this.analyserNodes[track]);
             this.analyserNodes[track].connect(this.masterGainNode);
             this.randomGains[track] = Math.exp(Math.random() * Math.log(4)) / 2;
-            
+
             const fader = document.getElementById(`${track}-fader`)?.querySelector('input') as HTMLInputElement;
             if (fader) {
                 fader.value = '0.5';
@@ -182,16 +189,16 @@ class MixerGame {
         if (!this.isAudioInitialized || !this.isAudioLoaded) return;
         const duration = this.audioBuffers[this.tracks[0]].duration;
         const newTime = (position / 100) * duration;
-        
+
         const wasPlaying = this.isPlaying;
         if (this.isPlaying) {
             this.audioContext.suspend();
         }
-        
+
         this.createAudioSources();
         this.startTime = this.audioContext.currentTime - newTime;
         this.tracks.forEach(track => this.audioSources[track].start(0, newTime));
-        
+
         if (wasPlaying) {
             this.audioContext.resume();
             requestAnimationFrame(() => this.updateTimeSlider());
@@ -218,17 +225,17 @@ class MixerGame {
     private toggleComparisonMode(isComparison: boolean): void {
         this.isComparisonMode = isComparison;
         this.tracks.forEach(track => {
-            const fader = document.getElementById(`${track}-fader`)?.querySelector('input') as HTMLInputElement;
+            const fader = document.getElementById(`${track}-fader`) as VolumeSlider;
             if (isComparison) {
                 this.setTrackVolume(track, this.gainToFader(1 / this.randomGains[track]));
                 if (this.isSubmitted) {
-                    fader.value = this.gainToFader(1 / this.randomGains[track]).toString();
+                    fader.setValue(this.gainToFader(1 / this.randomGains[track]));
                 }
             } else {
                 this.setTrackVolume(track, this.playerSettings[track] || 0.5);
-                fader.value = (this.playerSettings[track] || 0.5).toString();
+                fader.setValue(this.playerSettings[track] || 0.5);
             }
-            fader.disabled = isComparison;
+            fader.setDisabled(isComparison);
         });
     }
 
@@ -236,17 +243,21 @@ class MixerGame {
         const playPauseBtn = document.getElementById('playPauseBtn') as HTMLButtonElement;
         playPauseBtn.addEventListener('click', () => this.togglePlayPause());
 
-        const masterVolume = document.getElementById('masterVolume') as HTMLInputElement;
-        masterVolume.addEventListener('input', (e) => this.setMasterVolume(parseFloat((e.target as HTMLInputElement).value)));
-
         const timeSlider = document.getElementById('timeSlider') as HTMLInputElement;
         timeSlider.addEventListener('input', (e) => this.setPlaybackPosition(parseFloat((e.target as HTMLInputElement).value)));
-        
+
+        const masterVolume = document.getElementById('master-volume') as VolumeSlider;
+        masterVolume.addEventListener('change', (e: Event) => {
+            const customEvent = e as CustomEvent;
+            this.setMasterVolume(customEvent.detail.value);
+        });
+
         this.tracks.forEach(track => {
-            const fader = document.getElementById(`${track}-fader`)?.querySelector('input') as HTMLInputElement;
-            fader.addEventListener('input', (e) => {
+            const fader = document.getElementById(`${track}-fader`) as VolumeSlider;
+            fader.addEventListener('change', (e: Event) => {
+                const customEvent = e as CustomEvent;
                 if (!this.isAnswerMode) {
-                    const value = parseFloat((e.target as HTMLInputElement).value);
+                    const value = customEvent.detail.value;
                     this.setTrackVolume(track, value);
                     this.playerSettings[track] = value;
                 }

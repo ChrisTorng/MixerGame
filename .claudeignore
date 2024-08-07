@@ -1,5 +1,10 @@
-.gitignore
+dist/**
 .claudeignore
+.gitignore
 LICENSE
+package-lock.json
+package.json
 README.md
 run.cmd
+tsconfig.json
+webpack.config.js

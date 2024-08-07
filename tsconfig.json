@@ -2,10 +2,12 @@
   "compilerOptions": {
     "target": "es6",
     "module": "es6",
+    "moduleResolution": "node",
     "strict": true,
     "esModuleInterop": true,
-    "sourceMap": true,
-    "outDir": "./dist",
-    "rootDir": "./src"
-  }
+    "experimentalDecorators": true,
+    "lib": ["es6", "dom", "dom.iterable"]
+  },
+  "include": ["src/**/*"],
+  "exclude": ["node_modules"]
 }

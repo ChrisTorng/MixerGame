@@ -16,34 +16,13 @@
         </div>
 
         <div class="faders-container">
-            <div id="vocal-fader" class="fader">
-                <input type="range" min="0" max="1" step="0.01" value="0.5" orient="vertical">
-                <label>人聲</label>
-            </div>
-            <div id="guitar-fader" class="fader">
-                <input type="range" min="0" max="1" step="0.01" value="0.5" orient="vertical">
-                <label>吉他</label>
-            </div>
-            <div id="piano-fader" class="fader">
-                <input type="range" min="0" max="1" step="0.01" value="0.5" orient="vertical">
-                <label>鋼琴</label>
-            </div>
-            <div id="other-fader" class="fader">
-                <input type="range" min="0" max="1" step="0.01" value="0.5" orient="vertical">
-                <label>其他</label>
-            </div>
-            <div id="bass-fader" class="fader">
-                <input type="range" min="0" max="1" step="0.01" value="0.5" orient="vertical">
-                <label>貝斯</label>
-            </div>
-            <div id="drum-fader" class="fader">
-                <input type="range" min="0" max="1" step="0.01" value="0.5" orient="vertical">
-                <label>鼓</label>
-            </div>
-            <div class="fader master-volume">
-                <input type="range" min="0" max="1" step="0.01" value="1" orient="vertical" id="masterVolume">
-                <label>主音量</label>
-            </div>
+            <volume-slider id="vocal-fader" name="人聲"></volume-slider>
+            <volume-slider id="guitar-fader" name="吉他"></volume-slider>
+            <volume-slider id="piano-fader" name="鋼琴"></volume-slider>
+            <volume-slider id="other-fader" name="其他"></volume-slider>
+            <volume-slider id="bass-fader" name="貝斯"></volume-slider>
+            <volume-slider id="drum-fader" name="鼓"></volume-slider>
+            <volume-slider id="master-volume" name="主音量"></volume-slider>
         </div>
 
         <div class="game-controls">
