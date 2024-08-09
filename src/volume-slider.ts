@@ -95,11 +95,11 @@ class VolumeSlider extends HTMLElement {
         <div class="slider-container">
           <input type="range" min="0" max="100" step="1" value="80">
           <div class="scale">
-            <span>10</span>
-            <span>6</span>
+            <span>14</span>
+            <span>8</span>
             <span>0</span>
-            <span>-12</span>
-            <span>-24</span>
+            <span>-10</span>
+            <span>-20</span>
             <span>-∞</span>
           </div>
         </div>
@@ -117,7 +117,7 @@ class VolumeSlider extends HTMLElement {
       const value = parseInt(target.value);
       const dbValue = this.sliderValueToDb(value);
       this.updateValueDisplay(dbValue);
-      this.dispatchEvent(new CustomEvent('change', { 
+      this.dispatchEvent(new CustomEvent('change', {
         detail: { value: this.dbToGain(dbValue) },
         bubbles: true,
         composed: true
@@ -146,14 +146,14 @@ class VolumeSlider extends HTMLElement {
 
   private sliderValueToDb(value: number): number {
     if (value === 0) return -Infinity;
-    return 10 * Math.log10(value / 80); // 80 is the 0dB point (80%)
+    return 20 * Math.log10(0.2 + (4.8 * value / 100)); // 0.2 到 5 的範圍
   }
 
   private dbToSliderValue(db: number): number {
     if (db === -Infinity) return 0;
-    return Math.round(80 * Math.pow(10, db / 10));
+    return Math.round(((Math.pow(10, db / 20) - 0.2) / 4.8) * 100);
   }
-
+  
   private gainToDb(gainValue: number): number {
     return 20 * Math.log10(gainValue);
   }

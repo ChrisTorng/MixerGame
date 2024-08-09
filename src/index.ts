@@ -81,7 +81,7 @@ class MixerGame {
             this.analyserNodes[track] = this.audioContext.createAnalyser();
             this.gainNodes[track].connect(this.analyserNodes[track]);
             this.analyserNodes[track].connect(this.masterGainNode);
-            this.randomGains[track] = Math.exp(Math.random() * Math.log(4)) / 2;
+            this.randomGains[track] = Math.exp(Math.random() * Math.log(16)) / 4; // 0.25 到 4 的範圍
 
             const fader = document.getElementById(`${track}-fader`)?.querySelector('input') as HTMLInputElement;
             if (fader) {
@@ -172,13 +172,11 @@ class MixerGame {
     }
 
     private gainToFader(gain: number): number {
-        return Math.log(gain / 0.25) / Math.log(16);
+        return Math.log(gain / 0.2) / Math.log(25);
     }
-
     private faderToGain(faderValue: number): number {
-        return 0.25 * Math.pow(16, faderValue);
+        return 0.2 * Math.pow(25, faderValue); // 0.2 到 5 的範圍
     }
-
     private setTrackVolume(track: TrackName, faderValue: number): void {
         if (!this.isAudioInitialized) return;
         const gainValue = this.faderToGain(faderValue);
