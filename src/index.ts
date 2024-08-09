@@ -172,11 +172,17 @@ class MixerGame {
     }
 
     private gainToFader(gain: number): number {
-        return Math.log(gain / 0.2) / Math.log(25);
+        // 修正：確保增益值在有效範圍內
+        gain = Math.max(0.2, Math.min(5, gain));
+        return (gain - 0.2) / 4.8;
     }
+
     private faderToGain(faderValue: number): number {
-        return 0.2 * Math.pow(25, faderValue); // 0.2 到 5 的範圍
+        // 修正：確保 faderValue 在 0-1 範圍內
+        faderValue = Math.max(0, Math.min(1, faderValue));
+        return 0.2 + (faderValue * 4.8);
     }
+
     private setTrackVolume(track: TrackName, faderValue: number): void {
         if (!this.isAudioInitialized) return;
         const gainValue = this.faderToGain(faderValue);
@@ -225,13 +231,13 @@ class MixerGame {
         this.tracks.forEach(track => {
             const fader = document.getElementById(`${track}-fader`) as VolumeSlider;
             if (isComparison) {
-                this.setTrackVolume(track, this.gainToFader(1 / this.randomGains[track]));
-                if (this.isSubmitted) {
-                    fader.setValue(this.gainToFader(1 / this.randomGains[track]));
-                }
+                // 修正：使用正確的增益值設置音量
+                const comparisonGain = 1 / this.randomGains[track];
+                this.setTrackVolume(track, this.gainToFader(comparisonGain));
+                fader.setValue(comparisonGain);
             } else {
-                this.setTrackVolume(track, this.playerSettings[track] || 0.5);
-                fader.setValue(this.playerSettings[track] || 0.5);
+                this.setTrackVolume(track, this.playerSettings[track]);
+                fader.setValue(this.faderToGain(this.playerSettings[track]));
             }
             fader.setDisabled(isComparison);
         });

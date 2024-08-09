@@ -113,15 +113,16 @@ class VolumeSlider extends HTMLElement {
 
   setupEventListeners() {
     this.slider.addEventListener('input', (e: Event) => {
-      const target = e.target as HTMLInputElement;
-      const value = parseInt(target.value);
-      const dbValue = this.sliderValueToDb(value);
-      this.updateValueDisplay(dbValue);
-      this.dispatchEvent(new CustomEvent('change', {
-        detail: { value: this.dbToGain(dbValue) },
-        bubbles: true,
-        composed: true
-      }));
+        const target = e.target as HTMLInputElement;
+        const value = parseInt(target.value);
+        const gain = this.sliderValueToGain(value);
+        const dbValue = this.gainToDb(gain);
+        this.updateValueDisplay(dbValue);
+        this.dispatchEvent(new CustomEvent('change', { 
+            detail: { value: gain },
+            bubbles: true,
+            composed: true
+        }));
     });
   }
 
@@ -130,10 +131,20 @@ class VolumeSlider extends HTMLElement {
   }
 
   setValue(gainValue: number) {
-    const dbValue = this.gainToDb(gainValue);
-    const sliderValue = this.dbToSliderValue(dbValue);
+    // 修正：直接使用增益值設置滑桿
+    const sliderValue = this.gainToSliderValue(gainValue);
     this.slider.value = sliderValue.toString();
-    this.updateValueDisplay(dbValue);
+    this.updateValueDisplay(this.gainToDb(gainValue));
+  }
+
+  private gainToSliderValue(gain: number): number {
+    // 新增：將增益值轉換為滑桿值（0-100）
+    return Math.round(((gain - 0.2) / 4.8) * 100);
+  }
+
+  private sliderValueToGain(value: number): number {
+    // 新增：將滑桿值（0-100）轉換為增益值
+    return 0.2 + (value / 100) * 4.8;
   }
 
   private updateValueDisplay(dbValue: number) {
