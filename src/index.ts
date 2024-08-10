@@ -66,7 +66,7 @@ class MixerGame {
 
     private initAudio(): void {
         if (this.isAudioInitialized) return;
-        
+
         this.masterGainNode.connect(this.audioContext.destination);
 
         this.tracks.forEach(track => {
@@ -74,8 +74,8 @@ class MixerGame {
             this.analyserNodes[track] = this.audioContext.createAnalyser();
             this.gainNodes[track].connect(this.analyserNodes[track]);
             this.analyserNodes[track].connect(this.masterGainNode);
-            this.randomGains[track] = Math.exp(Math.random() * Math.log(4)) / 2;
-            
+            this.randomGains[track] = Math.exp(Math.random() * Math.log(16)) / 4;
+
             const fader = document.getElementById(`${track}-fader`)?.querySelector('input') as HTMLInputElement;
             if (fader) {
                 fader.value = '0.5';
@@ -165,11 +165,11 @@ class MixerGame {
     }
 
     private gainToFader(gain: number): number {
-        return Math.log(gain / 0.25) / Math.log(16);
+        return Math.log(gain / 0.2) / Math.log(25);
     }
 
     private faderToGain(faderValue: number): number {
-        return 0.25 * Math.pow(16, faderValue);
+        return 0.2 * Math.pow(25, faderValue);
     }
 
     private setTrackVolume(track: TrackName, faderValue: number): void {
@@ -182,16 +182,16 @@ class MixerGame {
         if (!this.isAudioInitialized || !this.isAudioLoaded) return;
         const duration = this.audioBuffers[this.tracks[0]].duration;
         const newTime = (position / 100) * duration;
-        
+
         const wasPlaying = this.isPlaying;
         if (this.isPlaying) {
             this.audioContext.suspend();
         }
-        
+
         this.createAudioSources();
         this.startTime = this.audioContext.currentTime - newTime;
         this.tracks.forEach(track => this.audioSources[track].start(0, newTime));
-        
+
         if (wasPlaying) {
             this.audioContext.resume();
             requestAnimationFrame(() => this.updateTimeSlider());
@@ -241,7 +241,7 @@ class MixerGame {
 
         const timeSlider = document.getElementById('timeSlider') as HTMLInputElement;
         timeSlider.addEventListener('input', (e) => this.setPlaybackPosition(parseFloat((e.target as HTMLInputElement).value)));
-        
+
         this.tracks.forEach(track => {
             const fader = document.getElementById(`${track}-fader`)?.querySelector('input') as HTMLInputElement;
             fader.addEventListener('input', (e) => {
