@@ -74,13 +74,13 @@ class MixerGame {
             this.analyserNodes[track] = this.audioContext.createAnalyser();
             this.gainNodes[track].connect(this.analyserNodes[track]);
             this.analyserNodes[track].connect(this.masterGainNode);
-            this.randomGains[track] = Math.exp(Math.random() * Math.log(16)) / 4;
-
+            this.randomGains[track] = Math.exp(Math.random() * Math.log(16)) / 4; // 0.25 到 4 的範圍
+            
             const fader = document.getElementById(`${track}-fader`)?.querySelector('input') as HTMLInputElement;
             if (fader) {
                 fader.value = '0.5'; // 設置推桿到中間位置
-                this.setTrackVolume(track, 0.5);
                 this.playerSettings[track] = 0.5;
+                this.setTrackVolume(track, 0.5, false); // 初始化時不應用隨機增益
             }
         });
 
@@ -173,10 +173,12 @@ class MixerGame {
         return 0.2 * Math.pow(25, faderValue);
     }
 
-    private setTrackVolume(track: TrackName, faderValue: number): void {
+    private setTrackVolume(track: TrackName, faderValue: number, applyRandom: boolean = true): void {
         if (!this.isAudioInitialized) return;
-        const gainValue = this.faderToGain(faderValue);
-        // 應用隨機增益到音量設置
+        let gainValue = this.faderToGain(faderValue);
+        if (applyRandom) {
+            gainValue *= this.randomGains[track]; // 只在非比較模式時應用隨機增益
+        }
         this.gainNodes[track].gain.setValueAtTime(gainValue, this.audioContext.currentTime);
     }
 
@@ -222,17 +224,13 @@ class MixerGame {
         this.tracks.forEach(track => {
             const fader = document.getElementById(`${track}-fader`)?.querySelector('input') as HTMLInputElement;
             if (isComparison) {
-                // 在比較模式下，顯示正確答案（相對於隨機增益的補償值）
-                const correctFaderValue = this.gainToFader(1 / this.randomGains[track]);
-                this.setTrackVolume(track, correctFaderValue);
-                if (this.isSubmitted) {
-                    fader.value = correctFaderValue.toString();
-                }
+                // 在比較模式下，顯示原始音量（不應用隨機增益）
+                this.setTrackVolume(track, this.playerSettings[track], false);
             } else {
-                // 在正常模式下，使用玩家的設置
-                this.setTrackVolume(track, this.playerSettings[track]);
-                fader.value = this.playerSettings[track].toString();
+                // 在正常模式下，應用隨機增益
+                this.setTrackVolume(track, this.playerSettings[track], true);
             }
+            fader.value = this.playerSettings[track].toString();
             fader.disabled = isComparison;
         });
     }
