@@ -78,8 +78,9 @@ class MixerGame {
 
             const fader = document.getElementById(`${track}-fader`)?.querySelector('input') as HTMLInputElement;
             if (fader) {
-                fader.value = '0.5';
+                fader.value = '0.5'; // 設置推桿到中間位置
                 this.setTrackVolume(track, 0.5);
+                this.playerSettings[track] = 0.5;
             }
         });
 
@@ -175,6 +176,7 @@ class MixerGame {
     private setTrackVolume(track: TrackName, faderValue: number): void {
         if (!this.isAudioInitialized) return;
         const gainValue = this.faderToGain(faderValue);
+        // 應用隨機增益到音量設置
         this.gainNodes[track].gain.setValueAtTime(gainValue, this.audioContext.currentTime);
     }
 
@@ -205,9 +207,9 @@ class MixerGame {
         if (!this.isAudioInitialized || !this.isAudioLoaded) return 0;
         let totalDifference = 0;
         this.tracks.forEach(track => {
-            const faderValue = this.playerSettings[track] || 0.5;
+            const faderValue = this.playerSettings[track];
             const userGain = this.faderToGain(faderValue);
-            const targetGain = 1 / this.randomGains[track];
+            const targetGain = 1 / this.randomGains[track]; // 正確答案是隨機增益的倒數
             const logDifference = Math.abs(Math.log2(userGain) - Math.log2(targetGain));
             totalDifference += logDifference;
         });
@@ -220,13 +222,16 @@ class MixerGame {
         this.tracks.forEach(track => {
             const fader = document.getElementById(`${track}-fader`)?.querySelector('input') as HTMLInputElement;
             if (isComparison) {
-                this.setTrackVolume(track, this.gainToFader(1 / this.randomGains[track]));
+                // 在比較模式下，顯示正確答案（相對於隨機增益的補償值）
+                const correctFaderValue = this.gainToFader(1 / this.randomGains[track]);
+                this.setTrackVolume(track, correctFaderValue);
                 if (this.isSubmitted) {
-                    fader.value = this.gainToFader(1 / this.randomGains[track]).toString();
+                    fader.value = correctFaderValue.toString();
                 }
             } else {
-                this.setTrackVolume(track, this.playerSettings[track] || 0.5);
-                fader.value = (this.playerSettings[track] || 0.5).toString();
+                // 在正常模式下，使用玩家的設置
+                this.setTrackVolume(track, this.playerSettings[track]);
+                fader.value = this.playerSettings[track].toString();
             }
             fader.disabled = isComparison;
         });
