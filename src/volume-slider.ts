@@ -1,6 +1,7 @@
 class VolumeSlider extends HTMLElement {
   private slider!: HTMLInputElement;
   private valueDisplay!: HTMLSpanElement;
+  private initialGain: number = 1;
 
   constructor() {
     super();
@@ -8,12 +9,18 @@ class VolumeSlider extends HTMLElement {
   }
 
   connectedCallback() {
+    const valueAttr = this.getAttribute('value');
+    if (valueAttr !== null) {
+      this.initialGain = parseFloat(valueAttr);
+    }
     this.render();
     this.setupEventListeners();
   }
 
   render() {
     const name = this.getAttribute('name') || 'Track';
+    const sliderValue = this.gainToSliderValue(this.initialGain);
+    const dbValue = this.gainToDb(this.initialGain);
     this.shadowRoot!.innerHTML = `
       <style>
         .fader {
@@ -93,7 +100,7 @@ class VolumeSlider extends HTMLElement {
       </style>
       <div class="fader">
         <div class="slider-container">
-          <input type="range" min="0" max="100" step="1" value="50">
+          <input type="range" min="0" max="100" step="1" value="${sliderValue}">
           <div class="scale">
             <span>14</span>
             <span>8</span>
@@ -104,7 +111,7 @@ class VolumeSlider extends HTMLElement {
           </div>
         </div>
         <label>${name}</label>
-        <span class="value-display">0 dB</span>
+        <span class="value-display">${dbValue.toFixed(1)} dB</span>
       </div>
     `;
     this.slider = this.shadowRoot!.querySelector('input')!;
@@ -113,16 +120,16 @@ class VolumeSlider extends HTMLElement {
 
   setupEventListeners() {
     this.slider.addEventListener('input', (e: Event) => {
-        const target = e.target as HTMLInputElement;
-        const value = parseInt(target.value);
-        const gain = this.sliderValueToGain(value);
-        const dbValue = this.gainToDb(gain);
-        this.updateValueDisplay(dbValue);
-        this.dispatchEvent(new CustomEvent('change', { 
-            detail: { value: gain },
-            bubbles: true,
-            composed: true
-        }));
+      const target = e.target as HTMLInputElement;
+      const value = parseInt(target.value);
+      const gain = this.sliderValueToGain(value);
+      const dbValue = this.gainToDb(gain);
+      this.updateValueDisplay(dbValue);
+      this.dispatchEvent(new CustomEvent('change', {
+        detail: { value: gain },
+        bubbles: true,
+        composed: true,
+      }));
     });
   }
 
@@ -137,13 +144,11 @@ class VolumeSlider extends HTMLElement {
   }
 
   private gainToSliderValue(gain: number): number {
-    // Convert gain to dB, then map dB range to slider range
     const db = this.gainToDb(gain);
     return Math.round(((db + 20) / 34) * 100);
   }
 
   private sliderValueToGain(value: number): number {
-    // Map slider range to dB range, then convert dB to gain
     const db = ((value / 100) * 34) - 20;
     return this.dbToGain(db);
   }
@@ -155,7 +160,7 @@ class VolumeSlider extends HTMLElement {
       this.valueDisplay.textContent = `${dbValue.toFixed(1)} dB`;
     }
   }
-  
+
   private gainToDb(gainValue: number): number {
     return 20 * Math.log10(gainValue);
   }
