@@ -93,7 +93,7 @@ class VolumeSlider extends HTMLElement {
       </style>
       <div class="fader">
         <div class="slider-container">
-          <input type="range" min="0" max="100" step="1" value="80">
+          <input type="range" min="0" max="100" step="1" value="50">
           <div class="scale">
             <span>14</span>
             <span>8</span>
@@ -131,20 +131,21 @@ class VolumeSlider extends HTMLElement {
   }
 
   setValue(gainValue: number) {
-    // 修正：直接使用增益值設置滑桿
     const sliderValue = this.gainToSliderValue(gainValue);
     this.slider.value = sliderValue.toString();
     this.updateValueDisplay(this.gainToDb(gainValue));
   }
 
   private gainToSliderValue(gain: number): number {
-    // 新增：將增益值轉換為滑桿值（0-100）
-    return Math.round(((gain - 0.2) / 4.8) * 100);
+    // Convert gain to dB, then map dB range to slider range
+    const db = this.gainToDb(gain);
+    return Math.round(((db + 20) / 34) * 100);
   }
 
   private sliderValueToGain(value: number): number {
-    // 新增：將滑桿值（0-100）轉換為增益值
-    return 0.2 + (value / 100) * 4.8;
+    // Map slider range to dB range, then convert dB to gain
+    const db = ((value / 100) * 34) - 20;
+    return this.dbToGain(db);
   }
 
   private updateValueDisplay(dbValue: number) {
@@ -153,16 +154,6 @@ class VolumeSlider extends HTMLElement {
     } else {
       this.valueDisplay.textContent = `${dbValue.toFixed(1)} dB`;
     }
-  }
-
-  private sliderValueToDb(value: number): number {
-    if (value === 0) return -Infinity;
-    return 20 * Math.log10(0.2 + (4.8 * value / 100)); // 0.2 到 5 的範圍
-  }
-
-  private dbToSliderValue(db: number): number {
-    if (db === -Infinity) return 0;
-    return Math.round(((Math.pow(10, db / 20) - 0.2) / 4.8) * 100);
   }
   
   private gainToDb(gainValue: number): number {

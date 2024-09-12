@@ -36,12 +36,12 @@ class MixerGame {
     private isAudioLoaded: boolean = false;
     private isAnswerMode: boolean = false;
     private playerSettings: PlayerSettings = {
-        vocal: 0.5,
-        guitar: 0.5,
-        piano: 0.5,
-        other: 0.5,
-        bass: 0.5,
-        drum: 0.5
+        vocal: 1,
+        guitar: 1,
+        piano: 1,
+        other: 1,
+        bass: 1,
+        drum: 1
     };
     private isSubmitted: boolean = false;
     private isComparisonMode: boolean = false;
@@ -83,10 +83,10 @@ class MixerGame {
             this.analyserNodes[track].connect(this.masterGainNode);
             this.randomGains[track] = Math.exp(Math.random() * Math.log(16)) / 4; // 0.25 到 4 的範圍
 
-            const fader = document.getElementById(`${track}-fader`)?.querySelector('input') as HTMLInputElement;
+            const fader = document.getElementById(`${track}-fader`) as VolumeSlider;
             if (fader) {
-                fader.value = '0.5';
-                this.setTrackVolume(track, 0.5);
+                fader.setValue(1);
+                this.setTrackVolume(track, 1);
             }
         });
 
@@ -171,22 +171,9 @@ class MixerGame {
         this.masterGainNode.gain.setValueAtTime(volume, this.audioContext.currentTime);
     }
 
-    private gainToFader(gain: number): number {
-        // 修正：確保增益值在有效範圍內
-        gain = Math.max(0.2, Math.min(5, gain));
-        return (gain - 0.2) / 4.8;
-    }
-
-    private faderToGain(faderValue: number): number {
-        // 修正：確保 faderValue 在 0-1 範圍內
-        faderValue = Math.max(0, Math.min(1, faderValue));
-        return 0.2 + (faderValue * 4.8);
-    }
-
-    private setTrackVolume(track: TrackName, faderValue: number): void {
+    private setTrackVolume(track: TrackName, gain: number): void {
         if (!this.isAudioInitialized) return;
-        const gainValue = this.faderToGain(faderValue);
-        this.gainNodes[track].gain.setValueAtTime(gainValue, this.audioContext.currentTime);
+        this.gainNodes[track].gain.setValueAtTime(gain, this.audioContext.currentTime);
     }
 
     private setPlaybackPosition(position: number): void {
@@ -216,8 +203,7 @@ class MixerGame {
         if (!this.isAudioInitialized || !this.isAudioLoaded) return 0;
         let totalDifference = 0;
         this.tracks.forEach(track => {
-            const faderValue = this.playerSettings[track] || 0.5;
-            const userGain = this.faderToGain(faderValue);
+            const userGain = this.playerSettings[track];
             const targetGain = 1 / this.randomGains[track];
             const logDifference = Math.abs(Math.log2(userGain) - Math.log2(targetGain));
             totalDifference += logDifference;
@@ -231,13 +217,12 @@ class MixerGame {
         this.tracks.forEach(track => {
             const fader = document.getElementById(`${track}-fader`) as VolumeSlider;
             if (isComparison) {
-                // 修正：使用正確的增益值設置音量
                 const comparisonGain = 1 / this.randomGains[track];
-                this.setTrackVolume(track, this.gainToFader(comparisonGain));
+                this.setTrackVolume(track, comparisonGain);
                 fader.setValue(comparisonGain);
             } else {
                 this.setTrackVolume(track, this.playerSettings[track]);
-                fader.setValue(this.faderToGain(this.playerSettings[track]));
+                fader.setValue(this.playerSettings[track]);
             }
             fader.setDisabled(isComparison);
         });
