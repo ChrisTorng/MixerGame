@@ -52,8 +52,8 @@ class MixerGame {
     constructor() {
         const isLocalDevelopment = window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1';
         this.tracksBaseUrl = isLocalDevelopment
-            ? '../UpLifeSongs/以斯拉 - 至高全能神的榮光'
-            : '../../UpLifeSongs/以斯拉 - 至高全能神的榮光';
+            ? '../songs/UpLifeSongs/以斯拉 - 至高全能神的榮光'
+            : '../../songs/UpLifeSongs/以斯拉 - 至高全能神的榮光';
         this.tracks = ['vocal', 'guitar', 'piano', 'other', 'bass', 'drum'];
         this.audioContext = new (window.AudioContext || (window as any).webkitAudioContext)();
         this.audioBuffers = {} as AudioBuffers;
