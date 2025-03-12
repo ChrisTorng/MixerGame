@@ -1,4 +1,3 @@
 node_modules/**
-UpLifeSongs/**/*.mp3
-UpLifeSongs/**/*.png
-claude_chats/**
+songs/**/*.mp3
+songs/**/*.png
