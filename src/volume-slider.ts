@@ -2,6 +2,8 @@ class VolumeSlider extends HTMLElement {
   private slider!: HTMLInputElement;
   private valueDisplay!: HTMLSpanElement;
   private initialGain: number = 1;
+  private static readonly MIN_DB = -70; // 代表 -∞ dB
+  private static readonly MAX_DB = 14;
 
   constructor() {
     super();
@@ -32,7 +34,8 @@ class VolumeSlider extends HTMLElement {
           background: #2c3e50;
           border-radius: 10px;
           padding: 10px 0;
-          box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+          box-sizing: border-box;
+          position: relative;
         }
         .slider-container {
           position: relative;
@@ -65,25 +68,17 @@ class VolumeSlider extends HTMLElement {
         }
         .scale {
           position: absolute;
-          left: 0;
+          left: 45px;
+          top: 10px;
           height: 150px;
-          display: flex;
-          flex-direction: column;
-          justify-content: space-between;
+          width: 20px;
           color: #bdc3c7;
           font-size: 10px;
         }
         .scale span {
-          position: relative;
-        }
-        .scale span::before {
-          content: '';
           position: absolute;
-          right: -12px;
-          top: 50%;
-          width: 8px;
-          height: 1px;
-          background: #bdc3c7;
+          left: 0;
+          transform: translateY(50%);
         }
         label {
           margin-top: 10px;
@@ -102,16 +97,16 @@ class VolumeSlider extends HTMLElement {
         <div class="slider-container">
           <input type="range" min="0" max="100" step="1" value="${sliderValue}">
           <div class="scale">
-            <span>14</span>
-            <span>8</span>
-            <span>0</span>
-            <span>-10</span>
-            <span>-20</span>
-            <span>-∞</span>
+            <span style="bottom: 100%;">14</span>
+            <span style="bottom: 92.86%;">8</span>
+            <span style="bottom: 83.33%;">0</span>
+            <span style="bottom: 71.43%;">-10</span>
+            <span style="bottom: 59.52%;">-20</span>
+            <span style="bottom: 0%;">-∞</span>
           </div>
         </div>
         <label>${name}</label>
-        <span class="value-display">${dbValue.toFixed(1)} dB</span>
+        <span class="value-display">${dbValue <= VolumeSlider.MIN_DB + 0.1 ? '-∞' : dbValue.toFixed(1)} dB</span>
       </div>
     `;
     this.slider = this.shadowRoot!.querySelector('input')!;
@@ -144,17 +139,26 @@ class VolumeSlider extends HTMLElement {
   }
 
   private gainToSliderValue(gain: number): number {
-    const db = this.gainToDb(gain);
-    return Math.round(((db + 20) / 34) * 100);
+    if (gain <= 0) {
+      return 0;
+    } else {
+      const db = this.gainToDb(gain);
+      const value = ((db - VolumeSlider.MIN_DB) / (VolumeSlider.MAX_DB - VolumeSlider.MIN_DB)) * 100;
+      return Math.round(value);
+    }
   }
 
   private sliderValueToGain(value: number): number {
-    const db = ((value / 100) * 34) - 20;
-    return this.dbToGain(db);
+    if (value <= 0) {
+      return 0;
+    } else {
+      const db = ((value / 100) * (VolumeSlider.MAX_DB - VolumeSlider.MIN_DB)) + VolumeSlider.MIN_DB;
+      return this.dbToGain(db);
+    }
   }
 
   private updateValueDisplay(dbValue: number) {
-    if (dbValue <= -70) {
+    if (dbValue <= VolumeSlider.MIN_DB + 0.1 || !isFinite(dbValue)) {
       this.valueDisplay.textContent = '-∞ dB';
     } else {
       this.valueDisplay.textContent = `${dbValue.toFixed(1)} dB`;
@@ -162,7 +166,11 @@ class VolumeSlider extends HTMLElement {
   }
 
   private gainToDb(gainValue: number): number {
-    return 20 * Math.log10(gainValue);
+    if (gainValue <= 0) {
+      return -Infinity;
+    } else {
+      return 20 * Math.log10(gainValue);
+    }
   }
 
   private dbToGain(dbValue: number): number {
