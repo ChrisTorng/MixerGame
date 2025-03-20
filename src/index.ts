@@ -50,10 +50,11 @@ class MixerGame {
     private pauseTime: number = 0;
 
     constructor() {
-        const isLocalDevelopment = window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1';
-        this.tracksBaseUrl = isLocalDevelopment
-            ? '../songs/UpLifeSongs/以斯拉 - 至高全能神的榮光'
-            : '../../songs/UpLifeSongs/以斯拉 - 至高全能神的榮光';
+        // const isLocalDevelopment = window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1';
+        // this.tracksBaseUrl = isLocalDevelopment
+        //     ? '../songs/UpLifeSongs/以斯拉 - 至高全能神的榮光'
+        //     : '../../songs/UpLifeSongs/以斯拉 - 至高全能神的榮光';
+        this.tracksBaseUrl = '../songs/UpLifeSongs/以斯拉 - 至高全能神的榮光';
         this.tracks = ['vocal', 'guitar', 'piano', 'other', 'bass', 'drum'];
         this.audioContext = new (window.AudioContext || (window as any).webkitAudioContext)();
         this.audioBuffers = {} as AudioBuffers;
