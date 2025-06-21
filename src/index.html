@@ -38,21 +38,13 @@
             <div>分數: <span id="scoreDisplay" style="visibility: hidden;">00</span></div>
         </div>
     </div>
+    <!-- 動態判斷本機開發或佈署，載入對應 JS -->
     <script>
-        (function() {
-            var script = document.createElement('script');
-            var isLocalhost = window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1';
-            script.src = isLocalhost ? `http://${window.location.hostname}:9000/bundle.js` : '../dist/bundle.min.js';
-            script.onerror = function() {
-                console.error('無法載入腳本：' + script.src);
-                if (isLocalhost) {
-                    alert('無法載入開發版本腳本。請確保你已運行 "npm start" 或 "npm run watch"。');
-                } else {
-                    alert('無法載入生產版本腳本。請確保你已運行 "npm run build" 並正確部署了文件。');
-                }
-            };
-            document.body.appendChild(script);
-        })();
+      // 若為本機(localhost/127.0.0.1)則載入 bundle.js，否則載入 bundle.min.js
+      const isLocal = location.hostname === 'localhost' || location.hostname === '127.0.0.1';
+      const script = document.createElement('script');
+      script.src = isLocal ? '../dist/bundle.js' : '../dist/bundle.min.js';
+      document.body.appendChild(script);
     </script>
 </body>
 </html>

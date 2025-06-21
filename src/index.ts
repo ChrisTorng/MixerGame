@@ -50,10 +50,6 @@ class MixerGame {
     private pauseTime: number = 0;
 
     constructor() {
-        // const isLocalDevelopment = window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1';
-        // this.tracksBaseUrl = isLocalDevelopment
-        //     ? '../songs/UpLifeSongs/以斯拉 - 至高全能神的榮光'
-        //     : '../../songs/UpLifeSongs/以斯拉 - 至高全能神的榮光';
         this.tracksBaseUrl = '../songs/UpLifeSongs/以斯拉 - 至高全能神的榮光';
         this.tracks = ['vocal', 'guitar', 'piano', 'other', 'bass', 'drum'];
         this.audioContext = new (window.AudioContext || (window as any).webkitAudioContext)();
@@ -70,9 +66,7 @@ class MixerGame {
         }
 
         this.initGame();
-    }
-
-    private initAudio(): void {
+    }    private initAudio(): void {
         if (this.isAudioInitialized) return;
 
         this.masterGainNode.connect(this.audioContext.destination);
@@ -86,7 +80,9 @@ class MixerGame {
 
             const fader = document.getElementById(`${track}-fader`) as VolumeSlider;
             if (fader) {
+                // 推桿顯示為 1，但實際聽到的音量是隨機增益影響後的結果
                 fader.setValue(1);
+                this.playerSettings[track] = 1;
                 this.setTrackVolume(track, 1);
             }
         });
@@ -170,11 +166,11 @@ class MixerGame {
     private setMasterVolume(volume: number): void {
         if (!this.isAudioInitialized) return;
         this.masterGainNode.gain.setValueAtTime(volume, this.audioContext.currentTime);
-    }
-
-    private setTrackVolume(track: TrackName, gain: number): void {
+    }    private setTrackVolume(track: TrackName, gain: number): void {
         if (!this.isAudioInitialized) return;
-        this.gainNodes[track].gain.setValueAtTime(gain, this.audioContext.currentTime);
+        // 實際音量 = 玩家設定的增益 * 隨機增益
+        const actualGain = gain * this.randomGains[track];
+        this.gainNodes[track].gain.setValueAtTime(actualGain, this.audioContext.currentTime);
     }
 
     private setPlaybackPosition(position: number): void {
@@ -211,17 +207,17 @@ class MixerGame {
         });
         const score = Math.max(0, 100 - (totalDifference / this.tracks.length) * 25);
         return Math.round(score);
-    }
-
-    private toggleComparisonMode(isComparison: boolean): void {
+    }    private toggleComparisonMode(isComparison: boolean): void {
         this.isComparisonMode = isComparison;
         this.tracks.forEach(track => {
             const fader = document.getElementById(`${track}-fader`) as VolumeSlider;
             if (isComparison) {
-                const comparisonGain = 1 / this.randomGains[track];
-                this.setTrackVolume(track, comparisonGain);
-                fader.setValue(comparisonGain);
+                // 正確答案模式：顯示補償隨機增益的正確值
+                const correctGain = 1 / this.randomGains[track];
+                this.setTrackVolume(track, correctGain);
+                fader.setValue(correctGain);
             } else {
+                // 目前設置模式：恢復玩家的設定
                 this.setTrackVolume(track, this.playerSettings[track]);
                 fader.setValue(this.playerSettings[track]);
             }
@@ -243,10 +239,9 @@ class MixerGame {
         });
 
         this.tracks.forEach(track => {
-            const fader = document.getElementById(`${track}-fader`) as VolumeSlider;
-            fader.addEventListener('change', (e: Event) => {
+            const fader = document.getElementById(`${track}-fader`) as VolumeSlider;            fader.addEventListener('change', (e: Event) => {
                 const customEvent = e as CustomEvent;
-                if (!this.isAnswerMode) {
+                if (!this.isComparisonMode) {
                     const value = customEvent.detail.value;
                     this.setTrackVolume(track, value);
                     this.playerSettings[track] = value;
