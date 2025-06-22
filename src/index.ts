@@ -50,7 +50,8 @@ class MixerGame {
     private pauseTime: number = 0;
 
     constructor() {
-        this.tracksBaseUrl = '../songs/UpLifeSongs/以斯拉 - 至高全能神的榮光';
+        // this.tracksBaseUrl = '../songs/UpLifeSongs/以斯拉 - 至高全能神的榮光';
+        this.tracksBaseUrl = '../songs/Will/程式夢想家';
         this.tracks = ['vocal', 'guitar', 'piano', 'other', 'bass', 'drum'];
         this.audioContext = new (window.AudioContext || (window as any).webkitAudioContext)();
         this.audioBuffers = {} as AudioBuffers;
@@ -66,7 +67,9 @@ class MixerGame {
         }
 
         this.initGame();
-    }    private initAudio(): void {
+    }
+    
+    private initAudio(): void {
         if (this.isAudioInitialized) return;
 
         this.masterGainNode.connect(this.audioContext.destination);
@@ -166,7 +169,9 @@ class MixerGame {
     private setMasterVolume(volume: number): void {
         if (!this.isAudioInitialized) return;
         this.masterGainNode.gain.setValueAtTime(volume, this.audioContext.currentTime);
-    }    private setTrackVolume(track: TrackName, gain: number): void {
+    }
+    
+    private setTrackVolume(track: TrackName, gain: number): void {
         if (!this.isAudioInitialized) return;
         // 實際音量 = 玩家設定的增益 * 隨機增益
         const actualGain = gain * this.randomGains[track];
@@ -207,7 +212,9 @@ class MixerGame {
         });
         const score = Math.max(0, 100 - (totalDifference / this.tracks.length) * 25);
         return Math.round(score);
-    }    private toggleComparisonMode(isComparison: boolean): void {
+    }
+    
+    private toggleComparisonMode(isComparison: boolean): void {
         this.isComparisonMode = isComparison;
         this.tracks.forEach(track => {
             const fader = document.getElementById(`${track}-fader`) as VolumeSlider;

@@ -1,3 +1,4 @@
 node_modules/**
 songs/**/*.mp3
 songs/**/*.png
+songs/**/*.asd

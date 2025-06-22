@@ -40,7 +40,7 @@ class VolumeSlider extends HTMLElement {
         .slider-container {
           position: relative;
           height: 150px;
-          width: 40px;
+          width: 10px;
           background: #34495e;
           border-radius: 20px;
           display: flex;
@@ -59,8 +59,8 @@ class VolumeSlider extends HTMLElement {
         }
         input[type="range"]::-webkit-slider-thumb {
           -webkit-appearance: none;
-          width: 20px;
-          height: 40px;
+          width: 10px;
+          height: 30px;
           background: #3498db;
           cursor: pointer;
           border-radius: 4px;
@@ -68,21 +68,21 @@ class VolumeSlider extends HTMLElement {
         }
         .scale {
           position: absolute;
-          left: 45px;
+          left: 20px;
           top: 10px;
-          height: 150px;
-          width: 20px;
+          margin-top: 5px;
+          height: 120px;
+          width: 13px;
           color: #bdc3c7;
           font-size: 10px;
         }
         .scale span {
           position: absolute;
-          left: 0;
+          right: 0;
           transform: translateY(50%);
         }
         label {
           margin-top: 10px;
-          text-align: center;
           color: #ecf0f1;
           font-size: 12px;
           font-weight: bold;
