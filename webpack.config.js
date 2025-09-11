@@ -24,7 +24,8 @@ module.exports = (env, argv) => {
     devtool: isProduction ? 'source-map' : 'eval-source-map',
     devServer: {
       static: {
-        directory: path.join(__dirname, 'public'),
+        // Serve static assets (index.html, index.css) from / not /src during dev
+        directory: __dirname,
       },
       compress: true,
       port: 9000,
