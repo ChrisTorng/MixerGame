@@ -124,7 +124,7 @@ class MixerGame {
             this.audioSources[track] = this.audioContext.createBufferSource();
             this.audioSources[track].buffer = this.audioBuffers[track];
             this.audioSources[track].connect(this.gainNodes[track]);
-            this.audioSources[track].loop = true;
+            this.audioSources[track].loop = false;
         });
     }
 
