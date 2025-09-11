@@ -50,8 +50,8 @@ class MixerGame {
     private pauseTime: number = 0;
 
     constructor() {
-        // this.tracksBaseUrl = '../songs/UpLifeSongs/以斯拉 - 至高全能神的榮光';
-        this.tracksBaseUrl = '../songs/Will/程式夢想家';
+        this.tracksBaseUrl = '../songs/UpLifeSongs/以斯拉 - 至高全能神的榮光';
+        // this.tracksBaseUrl = '../songs/Will/程式夢想家';
         this.tracks = ['vocal', 'guitar', 'piano', 'other', 'bass', 'drum'];
         this.audioContext = new (window.AudioContext || (window as any).webkitAudioContext)();
         this.audioBuffers = {} as AudioBuffers;
