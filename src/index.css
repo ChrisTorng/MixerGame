@@ -187,7 +187,14 @@ input:checked + .slider:before {
         align-items: stretch;
     }
 
-    #submitBtn, #resultControls, #scoreDisplay {
+    /* Mobile order: toggle on top, then submit (提示), then score */
+    #modeToggle { order: 1; }
+    #submitBtn { order: 2; }
+    #scoreContainer { order: 3; }
+
+    #modeToggle,
+    #submitBtn,
+    #scoreContainer {
         margin-bottom: 10px;
     }
 }
