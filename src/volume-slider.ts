@@ -86,6 +86,25 @@ class VolumeSlider extends HTMLElement {
           border-radius: 4px;
           box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
         }
+        /* Firefox */
+        input[type="range"]::-moz-range-thumb {
+          width: 10px;
+          height: 30px;
+          background: #3498db;
+          cursor: pointer;
+          border: none;
+          border-radius: 4px;
+          box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+        }
+        /* Track styling for better disabled contrast */
+        input[type="range"]::-webkit-slider-runnable-track {
+          height: 10px;
+          background: transparent;
+        }
+        input[type="range"]::-moz-range-track {
+          height: 10px;
+          background: transparent;
+        }
         .scale {
           position: absolute;
           left: 20px;
@@ -111,6 +130,38 @@ class VolumeSlider extends HTMLElement {
           margin-top: 5px;
           color: #3498db;
           font-size: 14px;
+        }
+        /* Disabled state styles */
+        .fader.is-disabled {
+          opacity: 0.8; /* slight dim across component */
+        }
+        .fader.is-disabled .slider-container {
+          background: #3a4a5a; /* darker track when disabled */
+        }
+        .fader.is-disabled label,
+        .fader.is-disabled .value-display,
+        .fader.is-disabled .scale {
+          color: #7f8c8d;
+        }
+        input[type="range"]:disabled {
+          cursor: not-allowed;
+          filter: grayscale(80%);
+        }
+        input[type="range"]:disabled::-webkit-slider-thumb {
+          background: #95a5a6;
+          box-shadow: none;
+          cursor: not-allowed;
+        }
+        input[type="range"]:disabled::-moz-range-thumb {
+          background: #95a5a6;
+          box-shadow: none;
+          cursor: not-allowed;
+        }
+        input[type="range"]:disabled::-webkit-slider-runnable-track {
+          background: transparent;
+        }
+        input[type="range"]:disabled::-moz-range-track {
+          background: transparent;
         }
       </style>
       <div class="fader">
@@ -145,6 +196,10 @@ class VolumeSlider extends HTMLElement {
 
   setDisabled(isDisabled: boolean) {
     this.slider.disabled = isDisabled;
+    const fader = this.shadowRoot!.querySelector('.fader');
+    if (fader) {
+      (fader as HTMLElement).classList.toggle('is-disabled', isDisabled);
+    }
   }
 
   setValue(gainValue: number) {
