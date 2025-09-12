@@ -7,9 +7,23 @@ html, body {
 body {
     font-family: Arial, sans-serif;
     display: flex;
-    justify-content: center;
-    align-items: center;
+    flex-direction: column;
+    justify-content: flex-start;
+    align-items: stretch;
+    min-height: 100vh;
     background-color: #f0f0f0;
+    /* Avoid content hidden behind mobile browser UI / notches */
+    padding-top: env(safe-area-inset-top);
+    padding-right: env(safe-area-inset-right);
+    padding-bottom: env(safe-area-inset-bottom);
+    padding-left: env(safe-area-inset-left);
+    /* Legacy iOS fallback */
+    padding-top: constant(safe-area-inset-top);
+    padding-right: constant(safe-area-inset-right);
+    padding-bottom: constant(safe-area-inset-bottom);
+    padding-left: constant(safe-area-inset-left);
+    overflow-y: auto;
+    overflow-x: hidden;
 }
 
 .mixer-container {
@@ -22,13 +36,14 @@ body {
     flex-direction: column;
     width: 90%;
     max-width: 800px;
-    margin: 20px auto;
+    margin: 16px auto;
 }
 
 .transport-controls {
     display: flex;
     align-items: center;
     margin-bottom: 20px;
+    min-width: 0; /* allow children to shrink on small screens */
 }
 
 #playPauseBtn {
@@ -47,6 +62,7 @@ body {
 
 #timeSlider {
     flex-grow: 1;
+    min-width: 0; /* prevent overflow in flex container */
 }
 
 .faders-container {
