@@ -2,8 +2,9 @@ class VolumeSlider extends HTMLElement {
   private slider!: HTMLInputElement;
   private valueDisplay!: HTMLSpanElement;
   private initialGain: number = 1;
-  private static readonly MIN_DB = -70; // 代表 -∞ dB
-  private static readonly MAX_DB = 14;
+  // 可配置的上下限（單位 dB），預設為 ±14 dB
+  private minDb: number = -14;
+  private maxDb: number = 14;
 
   constructor() {
     super();
@@ -15,6 +16,22 @@ class VolumeSlider extends HTMLElement {
     if (valueAttr !== null) {
       this.initialGain = parseFloat(valueAttr);
     }
+    const minAttr = this.getAttribute('min-db');
+    const maxAttr = this.getAttribute('max-db');
+    if (minAttr !== null) {
+      const parsed = parseFloat(minAttr);
+      if (!Number.isNaN(parsed)) this.minDb = parsed;
+    }
+    if (maxAttr !== null) {
+      const parsed = parseFloat(maxAttr);
+      if (!Number.isNaN(parsed)) this.maxDb = parsed;
+    }
+    // 確保數值有效（min 小於 max）
+    if (!(this.minDb < this.maxDb)) {
+      // 若設定錯誤，回退預設值
+      this.minDb = -14;
+      this.maxDb = 14;
+    }
     this.render();
     this.setupEventListeners();
   }
@@ -23,6 +40,9 @@ class VolumeSlider extends HTMLElement {
     const name = this.getAttribute('name') || 'Track';
     const sliderValue = this.gainToSliderValue(this.initialGain);
     const dbValue = this.gainToDb(this.initialGain);
+    const ticksHtml = this.buildScaleTicks()
+      .map(t => `<span style="bottom: ${t.percent}%">${t.label}</span>`)
+      .join('');
     this.shadowRoot!.innerHTML = `
       <style>
         .fader {
@@ -97,16 +117,11 @@ class VolumeSlider extends HTMLElement {
         <div class="slider-container">
           <input type="range" min="0" max="100" step="1" value="${sliderValue}">
           <div class="scale">
-            <span style="bottom: 100%;">14</span>
-            <span style="bottom: 92.86%;">8</span>
-            <span style="bottom: 83.33%;">0</span>
-            <span style="bottom: 71.43%;">-10</span>
-            <span style="bottom: 59.52%;">-20</span>
-            <span style="bottom: 0%;">-∞</span>
+            ${ticksHtml}
           </div>
         </div>
         <label>${name}</label>
-        <span class="value-display">${dbValue <= VolumeSlider.MIN_DB + 0.1 ? '-∞' : dbValue.toFixed(1)} dB</span>
+        <span class="value-display">${!isFinite(dbValue) ? '-∞' : dbValue.toFixed(1)} dB</span>
       </div>
     `;
     this.slider = this.shadowRoot!.querySelector('input')!;
@@ -140,25 +155,23 @@ class VolumeSlider extends HTMLElement {
 
   private gainToSliderValue(gain: number): number {
     if (gain <= 0) {
+      // 將 0 視為最小位置（顯示為 -∞）
       return 0;
-    } else {
-      const db = this.gainToDb(gain);
-      const value = ((db - VolumeSlider.MIN_DB) / (VolumeSlider.MAX_DB - VolumeSlider.MIN_DB)) * 100;
-      return Math.round(value);
     }
+    const db = this.gainToDb(gain);
+    const clampedDb = Math.min(this.maxDb, Math.max(this.minDb, db));
+    const value = ((clampedDb - this.minDb) / (this.maxDb - this.minDb)) * 100;
+    return Math.round(value);
   }
 
   private sliderValueToGain(value: number): number {
-    if (value <= 0) {
-      return 0;
-    } else {
-      const db = ((value / 100) * (VolumeSlider.MAX_DB - VolumeSlider.MIN_DB)) + VolumeSlider.MIN_DB;
-      return this.dbToGain(db);
-    }
+    const percent = Math.min(100, Math.max(0, value)) / 100;
+    const db = (percent * (this.maxDb - this.minDb)) + this.minDb;
+    return this.dbToGain(db);
   }
 
   private updateValueDisplay(dbValue: number) {
-    if (dbValue <= VolumeSlider.MIN_DB + 0.1 || !isFinite(dbValue)) {
+    if (!isFinite(dbValue)) {
       this.valueDisplay.textContent = '-∞ dB';
     } else {
       this.valueDisplay.textContent = `${dbValue.toFixed(1)} dB`;
@@ -175,6 +188,26 @@ class VolumeSlider extends HTMLElement {
 
   private dbToGain(dbValue: number): number {
     return Math.pow(10, dbValue / 20);
+  }
+
+  private dbToPercent(db: number): number {
+    const clamped = Math.min(this.maxDb, Math.max(this.minDb, db));
+    return ((clamped - this.minDb) / (this.maxDb - this.minDb)) * 100;
+  }
+
+  private buildScaleTicks(): { label: string; percent: number }[] {
+    // 建立 5 個刻度：max、(max+0)/2、0、(min+0)/2、min
+    const tickValues = [
+      this.maxDb,
+      this.maxDb / 2,
+      0,
+      this.minDb / 2,
+      this.minDb,
+    ];
+    return tickValues.map(v => ({
+      label: Number.isFinite(v) ? `${Math.round(v)}` : '-∞',
+      percent: this.dbToPercent(v),
+    }));
   }
 }
 
