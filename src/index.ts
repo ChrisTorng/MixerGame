@@ -223,16 +223,23 @@ class MixerGame {
         this.tracks.forEach(track => {
             const fader = document.getElementById(`${track}-fader`) as VolumeSlider;
             if (isComparison) {
-                // 正確答案模式：顯示補償隨機增益的正確值
+                // 原始混音（比較模式）：套用正確音量到音訊，但提交前不顯示正確推桿位置
                 const correctGain = 1 / this.randomGains[track];
                 this.setTrackVolume(track, correctGain);
-                fader.setValue(correctGain);
+                if (this.isSubmitted) {
+                    // 提交後才顯示正確推桿位置供比對
+                    fader.setValue(correctGain);
+                } else {
+                    // 提交前：維持玩家目前推桿位置（不變更數值）
+                    // 不更新 fader 值，僅停用
+                }
+                fader.setDisabled(true);
             } else {
-                // 目前設置模式：恢復玩家的設定
+                // 目前設置模式：恢復玩家的設定與推桿顯示
                 this.setTrackVolume(track, this.playerSettings[track]);
                 fader.setValue(this.playerSettings[track]);
+                fader.setDisabled(false);
             }
-            fader.setDisabled(isComparison);
         });
     }
 
