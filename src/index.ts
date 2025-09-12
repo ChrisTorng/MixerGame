@@ -74,6 +74,7 @@ class MixerGame {
 
         this.masterGainNode.connect(this.audioContext.destination);
 
+        // 建立節點與隨機增益，並初始化 UI 與玩家設定值
         this.tracks.forEach(track => {
             this.gainNodes[track] = this.audioContext.createGain();
             this.analyserNodes[track] = this.audioContext.createAnalyser();
@@ -83,14 +84,17 @@ class MixerGame {
 
             const fader = document.getElementById(`${track}-fader`) as VolumeSlider;
             if (fader) {
-                // 推桿顯示為 1，但實際聽到的音量是隨機增益影響後的結果
+                // 推桿顯示為 1（玩家初始設定為 1）
                 fader.setValue(1);
                 this.playerSettings[track] = 1;
-                this.setTrackVolume(track, 1);
             }
         });
 
+        // 標記初始化完成，接著依目前推桿位置套用實際音量
         this.isAudioInitialized = true;
+        this.tracks.forEach(track => {
+            this.setTrackVolume(track, this.playerSettings[track]);
+        });
     }
 
     private async loadAudio(): Promise<void> {
