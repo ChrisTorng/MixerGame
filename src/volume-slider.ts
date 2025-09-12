@@ -63,18 +63,20 @@ class VolumeSlider extends HTMLElement {
           width: 10px;
           background: #34495e;
           border-radius: 20px;
-          display: flex;
-          justify-content: center;
-          align-items: center;
           padding: 10px 0;
         }
         input[type="range"] {
+          position: absolute;
+          left: -50%;
+          top: 50%;
+          transform: translate(-50%, -50%) rotate(-90deg);
+          transform-origin: center;
           writing-mode: bt-lr;
           -webkit-appearance: none;
           width: 200px;
           height: 10px;
           background: transparent;
-          transform: rotate(-90deg);
+          margin: 0;
           z-index: 2;
         }
         input[type="range"]::-webkit-slider-thumb {
