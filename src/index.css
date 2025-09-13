@@ -39,6 +39,30 @@ body {
     margin: 16px auto;
 }
 
+.header-row {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 8px;
+    margin-bottom: 8px;
+}
+
+#restartBtn {
+    background-color: #FF9800; /* 強調再玩一次 */
+    border: none;
+    color: white;
+    padding: 8px 14px;
+    font-size: 14px;
+    border-radius: 5px;
+    cursor: pointer;
+}
+
+#restartBtn:disabled {
+    background-color: #BDBDBD;
+    color: #F5F5F5;
+    cursor: default;
+}
+
 .transport-controls {
     display: flex;
     align-items: center;

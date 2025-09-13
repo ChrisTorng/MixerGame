@@ -334,7 +334,16 @@ class MixerGame {
             // 送出後自動切換到「正確答案」（比較模式），顯示正確推桿
             modeToggleCheckbox.checked = true;
             this.toggleComparisonMode(true);
+            // 顯示再玩一次按鈕
+            const restartBtn = document.getElementById('restartBtn') as HTMLButtonElement;
+            if (restartBtn) restartBtn.style.display = 'inline-block';
         });
+
+        // 再玩一次：重置為新題目但保留已載入音訊
+        const restartBtn = document.getElementById('restartBtn') as HTMLButtonElement;
+        if (restartBtn) {
+            restartBtn.addEventListener('click', () => this.restartRound());
+        }
     }
 
     // 同步切換文字的可點擊與樣式狀態
@@ -352,6 +361,71 @@ class MixerGame {
         comparisonLabel.classList.toggle('active', comparisonIsActive);
         comparisonLabel.classList.toggle('inactive', !comparisonIsActive);
         comparisonLabel.setAttribute('aria-disabled', comparisonIsActive ? 'true' : 'false');
+    }
+
+    // 重新開始新一輪：產生新隨機值、重置 UI 與狀態、顯示「播放」
+    private restartRound(): void {
+        // 停止播放狀態
+        if (this.isPlaying) {
+            this.audioContext.suspend();
+        }
+        this.isPlaying = false;
+        this.startTime = 0;
+        this.pauseTime = 0;
+
+        // 清理來源節點，以便下次播放時重新建立
+        this.tracks.forEach(track => {
+            if (this.audioSources[track]) {
+                try { this.audioSources[track].disconnect(); } catch {}
+            }
+            // 移除以觸發下次 createAudioSources
+            // eslint-disable-next-line @typescript-eslint/no-dynamic-delete
+            delete this.audioSources[track];
+        });
+
+        // 產生新的隨機增益，重置玩家設定與推桿
+        this.tracks.forEach(track => {
+            this.randomGains[track] = Math.exp(Math.random() * Math.log(16)) / 4; // 0.25~4
+            this.playerSettings[track] = 1;
+            const fader = document.getElementById(`${track}-fader`) as VolumeSlider;
+            if (fader) {
+                fader.setValue(1);
+                fader.setDisabled(false);
+            }
+            this.setTrackVolume(track, 1);
+        });
+
+        // 重置總音量與滑桿
+        const masterFader = document.getElementById('master-volume') as VolumeSlider;
+        if (masterFader) masterFader.setValue(1);
+        this.setMasterVolume(1);
+
+        // 重置時間軸
+        const timeSlider = document.getElementById('timeSlider') as HTMLInputElement;
+        if (timeSlider) timeSlider.value = '0';
+
+        // 重置模式與標籤
+        const modeToggleCheckbox = document.getElementById('modeToggleCheckbox') as HTMLInputElement;
+        if (modeToggleCheckbox) modeToggleCheckbox.checked = false;
+        const comparisonText = document.getElementById('comparisonLabel') as HTMLSpanElement;
+        if (comparisonText) comparisonText.textContent = '原版混音';
+        this.isSubmitted = false;
+        this.toggleComparisonMode(false);
+
+        // 隱藏分數
+        const scoreDisplay = document.getElementById('scoreDisplay') as HTMLSpanElement;
+        if (scoreDisplay) {
+            scoreDisplay.style.visibility = 'hidden';
+            scoreDisplay.textContent = '00';
+        }
+
+        // 將播放鍵設為「播放」並可按（音訊已載入，無需重新載入）
+        const playPauseBtn = document.getElementById('playPauseBtn') as HTMLButtonElement;
+        if (playPauseBtn) {
+            playPauseBtn.disabled = false;
+            // 保持原本的圖示風格（播放圖示）
+            playPauseBtn.innerHTML = '&#9658;';
+        }
     }
 }
 
