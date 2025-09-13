@@ -99,14 +99,20 @@ class MixerGame {
 
     private async loadAudio(): Promise<void> {
         const playPauseBtn = document.getElementById('playPauseBtn') as HTMLButtonElement;
-        playPauseBtn.textContent = '載入中';
+        playPauseBtn.textContent = '載入中 0%';
         playPauseBtn.disabled = true;
 
         try {
+            let loadedCount = 0;
+            const total = this.tracks.length;
             await Promise.all(this.tracks.map(async (track) => {
                 const response = await fetch(`${this.tracksBaseUrl}/${track}.mp3`);
                 const audioData = await response.arrayBuffer();
                 this.audioBuffers[track] = await this.audioContext.decodeAudioData(audioData);
+                loadedCount += 1;
+                const percent = Math.round((loadedCount / total) * 100);
+                // 更新載入百分比到按鈕
+                playPauseBtn.textContent = `載入中 ${percent}%`;
             }));
 
             this.isAudioLoaded = true;
@@ -158,6 +164,11 @@ class MixerGame {
         this.isPlaying = !this.isPlaying;
         const playPauseBtn = document.getElementById('playPauseBtn') as HTMLButtonElement;
         playPauseBtn.innerHTML = this.isPlaying ? '&#10074;&#10074;' : '&#9658;';
+        // 開始播放後啟用「提交」鈕
+        if (this.isPlaying) {
+            const submitBtn = document.getElementById('submitBtn') as HTMLButtonElement;
+            if (submitBtn) submitBtn.disabled = false;
+        }
     }
 
     private updateTimeSlider(): void {
@@ -273,6 +284,8 @@ class MixerGame {
         });
 
         const submitBtn = document.getElementById('submitBtn') as HTMLButtonElement;
+        // 未播放前停用提交鈕
+        submitBtn.disabled = true;
         submitBtn.addEventListener('click', () => {
             const score = this.calculateScore();
             const scoreDisplay = document.getElementById('scoreDisplay') as HTMLSpanElement;

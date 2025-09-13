@@ -190,19 +190,34 @@ input:checked + .slider:before {
     }
 
     .game-controls {
-        flex-direction: column;
-        align-items: stretch;
+        flex-direction: row;
+        flex-wrap: wrap;             /* allow items to wrap to new row */
+        align-items: center;
+        justify-content: space-between; /* submit left, score right on second row */
     }
 
-    /* Mobile order: toggle on top, then submit (提示), then score */
-    #modeToggle { order: 1; }
+    /* Mobile order: toggle on first full row; then submit+score same row */
+    #modeToggle { order: 1; flex: 1 1 100%; }
     #submitBtn { order: 2; }
-    #scoreContainer { order: 3; }
+    #scoreContainer { order: 2; }
 
     #modeToggle,
     #submitBtn,
     #scoreContainer {
         margin-bottom: 10px;
+    }
+
+    /* Ensure toggle labels are vertically centered around the switch */
+    #modeToggle {
+        display: flex;
+        align-items: center;
+        justify-content: center; /* center the toggle horizontally */
+    }
+    #modeToggle span {
+        display: inline-flex;
+        align-items: center;
+        white-space: nowrap; /* avoid wrapping labels in mobile */
+        line-height: 1.2;
     }
 }
 
