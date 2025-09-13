@@ -146,6 +146,7 @@ class VolumeSlider extends HTMLElement {
           overflow: hidden;
           text-overflow: ellipsis;
           white-space: nowrap;
+          display: inline-block;
         }
         .value-display {
           margin-top: 5px;

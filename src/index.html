@@ -4,12 +4,16 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
     <title>混音器遊戲</title>
+    <link rel="icon" type="image/svg+xml" href="favicon.svg">
     <link rel="stylesheet" href="index.css">
 </head>
   <body>
     <div class="mixer-container">
         <div class="header-row">
-          <h1>混音器遊戲</h1>
+          <div class="title-wrap">
+            <img class="app-logo" src="logo-mark.svg" alt="" aria-hidden="true" />
+            <h1 class="app-title">混音器遊戲</h1>
+          </div>
           <button id="restartBtn" style="display: none;">再玩一次</button>
         </div>
 
@@ -24,7 +28,7 @@
             <volume-slider id="piano-fader" name="鋼琴"></volume-slider>
             <volume-slider id="other-fader" name="其他"></volume-slider>
             <volume-slider id="bass-fader" name="貝斯"></volume-slider>
-            <volume-slider id="drum-fader" name="鼓"></volume-slider>
+            <volume-slider id="drum-fader" name="鼓組"></volume-slider>
             <volume-slider id="master-volume" name="主音量"></volume-slider>
         </div>
 
