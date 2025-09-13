@@ -331,8 +331,9 @@ class MixerGame {
             const comparisonLabel = document.getElementById('comparisonLabel') as HTMLSpanElement;
             comparisonLabel.textContent = '正確答案';
             this.isSubmitted = true;
-            modeToggleCheckbox.checked = false;
-            this.toggleComparisonMode(false);
+            // 送出後自動切換到「正確答案」（比較模式），顯示正確推桿
+            modeToggleCheckbox.checked = true;
+            this.toggleComparisonMode(true);
         });
     }
 

@@ -60,6 +60,12 @@ body {
     border-radius: 5px;
 }
 
+#playPauseBtn:disabled {
+    background-color: #607D8B; /* 載入中：藍灰，表示忙碌且不可互動 */
+    color: #ECEFF1;
+    cursor: default;
+}
+
 #timeSlider {
     flex-grow: 1;
     min-width: 0; /* prevent overflow in flex container */
@@ -115,8 +121,14 @@ body {
     text-decoration: none;
     display: inline-block;
     font-size: 16px;
-    cursor: pointer;
+    cursor: pointer; /* only when enabled */
     border-radius: 5px;
+}
+
+#submitBtn:disabled {
+    background-color: #9E9E9E; /* 完成：灰色，表示未啟用 */
+    color: #F5F5F5;
+    cursor: default; /* do not show pointer when disabled */
 }
 
 .toggle-container {
