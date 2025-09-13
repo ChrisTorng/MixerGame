@@ -79,7 +79,7 @@ class VolumeSlider extends HTMLElement {
           transform-origin: center;
           writing-mode: bt-lr;
           -webkit-appearance: none;
-          width: 200px;
+          width: 150px;
           height: 10px;
           background: transparent;
           margin: 0;
@@ -119,8 +119,8 @@ class VolumeSlider extends HTMLElement {
           position: absolute;
           left: 20px;
           top: 10px;
-          margin-top: 5px;
-          height: 120px;
+          margin-top: -3px;
+          height: 140px;
           width: 13px;
           color: #bdc3c7;
           font-size: 10px;
@@ -155,7 +155,7 @@ class VolumeSlider extends HTMLElement {
           .value-display::after { content: ''; }
           .fader { height: 200px; padding: 8px 0; }
           .slider-container { height: 140px; width: 8px; }
-          input[type="range"] { width: 160px; height: 8px; }
+          input[type="range"] { width: 140px; height: 8px; }
           input[type="range"]::-webkit-slider-thumb { width: 8px; height: 24px; }
           input[type="range"]::-moz-range-thumb { width: 8px; height: 24px; }
           label { font-size: 11px; }
