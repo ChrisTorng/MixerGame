@@ -55,19 +55,20 @@ class VolumeSlider extends HTMLElement {
           flex-direction: column;
           align-items: center;
           width: 100%;
-          max-width: var(--fader-max-width, 60px);
-          height: 220px;
-          background: #2c3e50;
-          border-radius: 10px;
+          max-width: var(--fader-max-width, 64px);
+          height: 224px;
+          background: linear-gradient(180deg, #2c3e50 0%, #273747 100%);
+          border-radius: 12px;
           padding: 10px 0;
           box-sizing: border-box;
           position: relative;
+          box-shadow: 0 6px 18px rgba(0,0,0,.35) inset, 0 2px 10px rgba(0,0,0,.35);
         }
         .slider-container {
           position: relative;
           height: 150px;
-          width: 10px;
-          background: #34495e;
+          width: 12px;
+          background: linear-gradient(180deg, #3b5167 0%, #2e4357 100%);
           border-radius: 20px;
           padding: 10px 0;
         }
@@ -80,7 +81,7 @@ class VolumeSlider extends HTMLElement {
           writing-mode: bt-lr;
           -webkit-appearance: none;
           width: 150px;
-          height: 10px;
+          height: 12px;
           background: transparent;
           margin: 0;
           z-index: 2;
@@ -89,40 +90,40 @@ class VolumeSlider extends HTMLElement {
         }
         input[type="range"]::-webkit-slider-thumb {
           -webkit-appearance: none;
-          width: 10px;
-          height: 30px;
-          background: #3498db;
+          width: 12px;
+          height: 32px;
+          background: linear-gradient(180deg, #4fc3f7, #3498db);
           cursor: pointer;
-          border-radius: 4px;
-          box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+          border-radius: 6px;
+          box-shadow: 0 2px 6px rgba(0, 0, 0, 0.25);
         }
         /* Firefox */
         input[type="range"]::-moz-range-thumb {
-          width: 10px;
-          height: 30px;
-          background: #3498db;
+          width: 12px;
+          height: 32px;
+          background: linear-gradient(180deg, #4fc3f7, #3498db);
           cursor: pointer;
           border: none;
-          border-radius: 4px;
-          box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+          border-radius: 6px;
+          box-shadow: 0 2px 6px rgba(0, 0, 0, 0.25);
         }
         /* Track styling for better disabled contrast */
         input[type="range"]::-webkit-slider-runnable-track {
-          height: 10px;
+          height: 12px;
           background: transparent;
         }
         input[type="range"]::-moz-range-track {
-          height: 10px;
+          height: 12px;
           background: transparent;
         }
         .scale {
           position: absolute;
-          left: 20px;
+          left: 22px;
           top: 10px;
           margin-top: -3px;
           height: 140px;
           width: 13px;
-          color: #bdc3c7;
+          color: #c4d0da;
           font-size: 10px;
           display: var(--scale-display, block);
         }
@@ -130,6 +131,11 @@ class VolumeSlider extends HTMLElement {
           position: absolute;
           right: 0;
           transform: translateY(50%);
+        }
+        .scale span:nth-child(3) { /* 0 dB tick */
+          color: #ffffff;
+          font-weight: 700;
+          text-shadow: 0 1px 2px rgba(0,0,0,.35);
         }
         label {
           margin-top: 10px;
@@ -143,7 +149,7 @@ class VolumeSlider extends HTMLElement {
         }
         .value-display {
           margin-top: 5px;
-          color: #3498db;
+          color: #4fc3f7;
           font-size: 14px;
         }
         .value-display::after { content: ' dB'; }
@@ -154,10 +160,10 @@ class VolumeSlider extends HTMLElement {
           .value-display { font-size: 12px; }
           .value-display::after { content: ''; }
           .fader { height: 200px; padding: 8px 0; }
-          .slider-container { height: 140px; width: 8px; }
-          input[type="range"] { width: 140px; height: 8px; }
-          input[type="range"]::-webkit-slider-thumb { width: 8px; height: 24px; }
-          input[type="range"]::-moz-range-thumb { width: 8px; height: 24px; }
+          .slider-container { height: 140px; width: 10px; }
+          input[type="range"] { width: 150px; height: 10px; }
+          input[type="range"]::-webkit-slider-thumb { width: 12px; height: 32px; }
+          input[type="range"]::-moz-range-thumb { width: 12px; height: 32px; }
           label { font-size: 11px; }
         }
 
@@ -168,10 +174,10 @@ class VolumeSlider extends HTMLElement {
             .value-display { font-size: 12px; }
             .value-display::after { content: ''; }
             .fader { height: 200px; padding: 8px 0; }
-            .slider-container { height: 140px; width: 8px; }
-            input[type="range"] { width: 160px; height: 8px; }
-            input[type="range"]::-webkit-slider-thumb { width: 8px; height: 24px; }
-            input[type="range"]::-moz-range-thumb { width: 8px; height: 24px; }
+            .slider-container { height: 140px; width: 10px; }
+            input[type="range"] { width: 160px; height: 10px; }
+            input[type="range"]::-webkit-slider-thumb { width: 12px; height: 30px; }
+            input[type="range"]::-moz-range-thumb { width: 12px; height: 30px; }
             label { font-size: 11px; }
           }
         }
@@ -207,6 +213,7 @@ class VolumeSlider extends HTMLElement {
         input[type="range"]:disabled::-moz-range-track {
           background: transparent;
         }
+        input[type="range"]:focus-visible { outline: 3px solid rgba(33,150,243,.55); outline-offset: 2px; }
       </style>
       <div class="fader">
         <div class="slider-container">

@@ -11,9 +11,22 @@ body {
     justify-content: flex-start;
     align-items: stretch;
     min-height: 100vh;
+    /* Theme */
+    --bg: #101419;
+    --panel: #2d343c;
+    --panel-raised: #333a43;
+    --text: #e6eaf0;
+    --muted: #aab3bd;
+    --accent: #2196F3;
+    --accent-2: #4CAF50;
+    --warning: #FF9800;
+    --ring: rgba(33,150,243,.55);
+    --shadow-1: 0 4px 16px rgba(0,0,0,.45);
+    --shadow-2: 0 12px 32px rgba(0,0,0,.5);
+
     /* Switch page background to dark to match the app */
-    background-color: #1b1f24; /* dark outer background */
-    color: #e0e0e0; /* default text color for any outer text */
+    background: radial-gradient(1200px 600px at 20% 0%, #121821 0, var(--bg) 60%) fixed;
+    color: var(--text); /* default text color for any outer text */
     /* Avoid content hidden behind mobile browser UI / notches */
     padding-top: env(safe-area-inset-top);
     padding-right: env(safe-area-inset-right);
@@ -43,7 +56,7 @@ body {
 }
 .github-corner svg {
   /* Match the dark page background for a seamless corner */
-  fill: #1b1f24; /* corner background */
+  fill: #101419; /* corner background */
   color: #fff;   /* octocat color */
   width: 80px;
   height: 80px;
@@ -62,13 +75,13 @@ body {
 }
 
 .mixer-container {
-    background-color: #333;
-    color: white;
+    background: linear-gradient(180deg, var(--panel) 0%, var(--panel-raised) 100%);
+    color: var(--text);
     padding: 20px;
     border-radius: 10px;
     /* Slight border to keep a subtle boundary on dark outer bg */
     border: 1px solid rgba(255,255,255,0.06);
-    box-shadow: 0 8px 24px rgba(0,0,0,0.6);
+    box-shadow: var(--shadow-2);
     display: flex;
     flex-direction: column;
     width: 90%;
@@ -84,10 +97,17 @@ body {
     margin-bottom: 8px;
 }
 
+.header-row h1 {
+  margin: 0;
+  font-size: clamp(20px, 3.2vw, 32px);
+  letter-spacing: 1px;
+  text-shadow: 0 2px 10px rgba(0,0,0,.35);
+}
+
 #restartBtn {
-    background-color: #FF9800; /* 強調再玩一次 */
+    background: linear-gradient(180deg, #ffab2e, var(--warning)); /* 強調再玩一次 */
     border: none;
-    color: white;
+    color: #1a1a1a;
     padding: 8px 14px;
     font-size: 14px;
     border-radius: 5px;
@@ -102,6 +122,13 @@ body {
     cursor: default;
 }
 
+#restartBtn:not(:disabled):hover { filter: brightness(1.05); }
+#restartBtn:not(:disabled):active { transform: translateY(1px); }
+#restartBtn:focus-visible {
+  outline: 3px solid var(--ring);
+  outline-offset: 2px;
+}
+
 .transport-controls {
     display: flex;
     align-items: center;
@@ -110,7 +137,7 @@ body {
 }
 
 #playPauseBtn {
-    background-color: #4CAF50;
+    background: linear-gradient(180deg, #66bb6a, var(--accent-2));
     border: none;
     color: white;
     padding: 10px 20px;
@@ -129,10 +156,36 @@ body {
     cursor: default;
 }
 
+#playPauseBtn:not(:disabled):hover { filter: brightness(1.06); }
+#playPauseBtn:not(:disabled):active { transform: translateY(1px); }
+#playPauseBtn:focus-visible { outline: 3px solid var(--ring); outline-offset: 2px; }
+
 #timeSlider {
     flex-grow: 1;
     min-width: 0; /* prevent overflow in flex container */
+    -webkit-appearance: none;
+    height: 10px;
+    border-radius: 999px;
+    background: linear-gradient(180deg, #cfd8dc, #b0bec5);
+    outline: none;
 }
+#timeSlider::-webkit-slider-thumb {
+    -webkit-appearance: none;
+    width: 18px;
+    height: 18px;
+    background: var(--accent);
+    border-radius: 50%;
+    box-shadow: 0 2px 6px rgba(0,0,0,.3);
+}
+#timeSlider::-moz-range-thumb {
+    width: 18px;
+    height: 18px;
+    background: var(--accent);
+    border: none;
+    border-radius: 50%;
+    box-shadow: 0 2px 6px rgba(0,0,0,.3);
+}
+#timeSlider:focus-visible { outline: 3px solid var(--ring); outline-offset: 2px; }
 
 .faders-container {
     display: flex;
@@ -176,7 +229,7 @@ body {
 }
 
 #submitBtn {
-    background-color: #4CAF50;
+    background: linear-gradient(180deg, #64b5f6, var(--accent));
     border: none;
     color: white;
     padding: 10px 20px;
@@ -194,6 +247,10 @@ body {
     cursor: default; /* do not show pointer when disabled */
 }
 
+#submitBtn:not(:disabled):hover { filter: brightness(1.06); }
+#submitBtn:not(:disabled):active { transform: translateY(1px); }
+#submitBtn:focus-visible { outline: 3px solid var(--ring); outline-offset: 2px; }
+
 .toggle-container {
     display: flex;
     align-items: center;
@@ -202,8 +259,8 @@ body {
 .switch {
     position: relative;
     display: inline-block;
-    width: 80px;
-    height: 34px;
+    width: 84px;
+    height: 36px;
     margin: 0 10px;
 }
 
@@ -220,30 +277,33 @@ body {
     left: 0;
     right: 0;
     bottom: 0;
-    background-color: #ccc;
-    transition: .4s;
+    background: linear-gradient(180deg, #cfd8dc, #b0bec5);
+    transition: background-color .25s ease, transform .1s ease;
     border-radius: 34px;
 }
 
 .slider:before {
     position: absolute;
     content: "";
-    height: 26px;
-    width: 26px;
+    height: 28px;
+    width: 28px;
     left: 4px;
     bottom: 4px;
-    background-color: white;
-    transition: .4s;
+    background: radial-gradient(circle at 30% 30%, #fff, #e3e7eb);
+    box-shadow: 0 2px 6px rgba(0,0,0,.3);
+    transition: transform .25s ease;
     border-radius: 50%;
 }
 
 input:checked + .slider {
-    background-color: #2196F3;
+    background: linear-gradient(180deg, #64b5f6, var(--accent));
 }
 
 input:checked + .slider:before {
-    transform: translateX(26px);
+    transform: translateX(48px);
 }
+
+.switch input:focus-visible + .slider { box-shadow: 0 0 0 3px var(--ring) inset; }
 
 #scoreDisplay {
     font-size: 18px;
@@ -315,14 +375,14 @@ input:checked + .slider:before {
     transition: background-color .2s ease, color .2s ease, opacity .2s ease;
 }
 .toggle-label.active {
-    background-color: #2196F3;
+    background-color: var(--accent);
     color: #fff;
     cursor: default;
     opacity: 1;
 }
 .toggle-label.inactive {
     background: transparent;
-    color: #e0e0e0;
+    color: var(--muted);
     cursor: pointer;
     text-decoration: underline dotted;
 }
