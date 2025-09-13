@@ -11,7 +11,9 @@ body {
     justify-content: flex-start;
     align-items: stretch;
     min-height: 100vh;
-    background-color: #f0f0f0;
+    /* Switch page background to dark to match the app */
+    background-color: #1b1f24; /* dark outer background */
+    color: #e0e0e0; /* default text color for any outer text */
     /* Avoid content hidden behind mobile browser UI / notches */
     padding-top: env(safe-area-inset-top);
     padding-right: env(safe-area-inset-right);
@@ -40,7 +42,8 @@ body {
           clip-path: polygon(100% 0, 0 0, 100% 100%);
 }
 .github-corner svg {
-  fill: #151513; /* corner background */
+  /* Match the dark page background for a seamless corner */
+  fill: #1b1f24; /* corner background */
   color: #fff;   /* octocat color */
   width: 80px;
   height: 80px;
@@ -63,7 +66,9 @@ body {
     color: white;
     padding: 20px;
     border-radius: 10px;
-    box-shadow: 0 0 10px rgba(0,0,0,0.5);
+    /* Slight border to keep a subtle boundary on dark outer bg */
+    border: 1px solid rgba(255,255,255,0.06);
+    box-shadow: 0 8px 24px rgba(0,0,0,0.6);
     display: flex;
     flex-direction: column;
     width: 90%;
