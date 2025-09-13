@@ -45,11 +45,17 @@ class VolumeSlider extends HTMLElement {
       .join('');
     this.shadowRoot!.innerHTML = `
       <style>
+        :host {
+          display: block;
+          /* Enable container queries based on host width */
+          container-type: inline-size;
+        }
         .fader {
           display: flex;
           flex-direction: column;
           align-items: center;
-          width: 60px;
+          width: 100%;
+          max-width: var(--fader-max-width, 60px);
           height: 220px;
           background: #2c3e50;
           border-radius: 10px;
@@ -78,6 +84,8 @@ class VolumeSlider extends HTMLElement {
           background: transparent;
           margin: 0;
           z-index: 2;
+          /* Prevent page scroll while dragging the slider on touch devices */
+          touch-action: none;
         }
         input[type="range"]::-webkit-slider-thumb {
           -webkit-appearance: none;
@@ -116,6 +124,7 @@ class VolumeSlider extends HTMLElement {
           width: 13px;
           color: #bdc3c7;
           font-size: 10px;
+          display: var(--scale-display, block);
         }
         .scale span {
           position: absolute;
@@ -127,11 +136,44 @@ class VolumeSlider extends HTMLElement {
           color: #ecf0f1;
           font-size: 12px;
           font-weight: bold;
+          max-width: 100%;
+          overflow: hidden;
+          text-overflow: ellipsis;
+          white-space: nowrap;
         }
         .value-display {
           margin-top: 5px;
           color: #3498db;
           font-size: 14px;
+        }
+        .value-display::after { content: ' dB'; }
+
+        /* Compact only when the host becomes narrower than ~60px */
+        @container (max-width: 59px) {
+          .scale { display: none; }
+          .value-display { font-size: 12px; }
+          .value-display::after { content: ''; }
+          .fader { height: 200px; padding: 8px 0; }
+          .slider-container { height: 140px; width: 8px; }
+          input[type="range"] { width: 160px; height: 8px; }
+          input[type="range"]::-webkit-slider-thumb { width: 8px; height: 24px; }
+          input[type="range"]::-moz-range-thumb { width: 8px; height: 24px; }
+          label { font-size: 11px; }
+        }
+
+        /* Fallback for browsers without container queries */
+        @supports not (container-type: inline-size) {
+          @media (max-width: 500px) {
+            .scale { display: none; }
+            .value-display { font-size: 12px; }
+            .value-display::after { content: ''; }
+            .fader { height: 200px; padding: 8px 0; }
+            .slider-container { height: 140px; width: 8px; }
+            input[type="range"] { width: 160px; height: 8px; }
+            input[type="range"]::-webkit-slider-thumb { width: 8px; height: 24px; }
+            input[type="range"]::-moz-range-thumb { width: 8px; height: 24px; }
+            label { font-size: 11px; }
+          }
         }
         /* Disabled state styles */
         .fader.is-disabled {
@@ -174,7 +216,7 @@ class VolumeSlider extends HTMLElement {
           </div>
         </div>
         <label>${name}</label>
-        <span class="value-display">${!isFinite(dbValue) ? '-∞' : dbValue.toFixed(1)} dB</span>
+        <span class="value-display">${!isFinite(dbValue) ? '-∞' : dbValue.toFixed(1)}</span>
       </div>
     `;
     this.slider = this.shadowRoot!.querySelector('input')!;
@@ -229,9 +271,9 @@ class VolumeSlider extends HTMLElement {
 
   private updateValueDisplay(dbValue: number) {
     if (!isFinite(dbValue)) {
-      this.valueDisplay.textContent = '-∞ dB';
+      this.valueDisplay.textContent = '-∞';
     } else {
-      this.valueDisplay.textContent = `${dbValue.toFixed(1)} dB`;
+      this.valueDisplay.textContent = `${dbValue.toFixed(1)}`;
     }
   }
 
