@@ -252,6 +252,7 @@ class MixerGame {
                 fader.setDisabled(false);
             }
         });
+        this.updateModeLabels();
     }
 
     private initGame(): void {
@@ -283,6 +284,42 @@ class MixerGame {
             this.toggleComparisonMode((e.target as HTMLInputElement).checked);
         });
 
+        // 點擊文字也能切換，僅允許點擊非當前的一側
+        const currentLabel = document.getElementById('currentSettingLabel') as HTMLSpanElement;
+        const comparisonLabel = document.getElementById('comparisonLabel') as HTMLSpanElement;
+
+        const handleActivateCurrent = () => {
+            if (this.isComparisonMode) {
+                modeToggleCheckbox.checked = false;
+                this.toggleComparisonMode(false);
+            }
+        };
+        const handleActivateComparison = () => {
+            if (!this.isComparisonMode) {
+                modeToggleCheckbox.checked = true;
+                this.toggleComparisonMode(true);
+            }
+        };
+
+        currentLabel.addEventListener('click', handleActivateCurrent);
+        comparisonLabel.addEventListener('click', handleActivateComparison);
+        // 簡單鍵盤無障礙：Enter/Space 觸發
+        currentLabel.addEventListener('keydown', (e: KeyboardEvent) => {
+            if (e.key === 'Enter' || e.key === ' ') {
+                e.preventDefault();
+                handleActivateCurrent();
+            }
+        });
+        comparisonLabel.addEventListener('keydown', (e: KeyboardEvent) => {
+            if (e.key === 'Enter' || e.key === ' ') {
+                e.preventDefault();
+                handleActivateComparison();
+            }
+        });
+
+        // 初始化標籤樣式狀態
+        this.updateModeLabels();
+
         const submitBtn = document.getElementById('submitBtn') as HTMLButtonElement;
         // 未播放前停用提交鈕
         submitBtn.disabled = true;
@@ -297,6 +334,23 @@ class MixerGame {
             modeToggleCheckbox.checked = false;
             this.toggleComparisonMode(false);
         });
+    }
+
+    // 同步切換文字的可點擊與樣式狀態
+    private updateModeLabels(): void {
+        const currentLabel = document.getElementById('currentSettingLabel');
+        const comparisonLabel = document.getElementById('comparisonLabel');
+        if (!currentLabel || !comparisonLabel) return;
+
+        const currentIsActive = !this.isComparisonMode;
+        currentLabel.classList.toggle('active', currentIsActive);
+        currentLabel.classList.toggle('inactive', !currentIsActive);
+        currentLabel.setAttribute('aria-disabled', currentIsActive ? 'true' : 'false');
+
+        const comparisonIsActive = this.isComparisonMode;
+        comparisonLabel.classList.toggle('active', comparisonIsActive);
+        comparisonLabel.classList.toggle('inactive', !comparisonIsActive);
+        comparisonLabel.setAttribute('aria-disabled', comparisonIsActive ? 'true' : 'false');
     }
 }
 

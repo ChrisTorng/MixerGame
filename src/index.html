@@ -28,12 +28,12 @@
         <div class="game-controls">
             <button id="submitBtn">提交</button>
             <div id="modeToggle" class="toggle-container">
-                <span id="currentSettingLabel">目前設置</span>
+                <span id="currentSettingLabel" class="toggle-label" role="button" tabindex="0" aria-disabled="true">目前設置</span>
                 <label class="switch">
                     <input type="checkbox" id="modeToggleCheckbox">
                     <span class="slider"></span>
                 </label>
-                <span id="comparisonLabel">原版混音</span>
+                <span id="comparisonLabel" class="toggle-label" role="button" tabindex="0" aria-disabled="false">原版混音</span>
             </div>
             <div id="scoreContainer">分數: <span id="scoreDisplay" style="visibility: hidden;">00</span></div>
         </div>

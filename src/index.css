@@ -230,3 +230,27 @@ input:checked + .slider:before {
 .toggle-container span {
     margin: 0 10px;
 }
+
+/* Toggle label states */
+.toggle-label {
+    padding: 4px 8px;
+    border-radius: 6px;
+    font-weight: 600;
+    user-select: none;
+    transition: background-color .2s ease, color .2s ease, opacity .2s ease;
+}
+.toggle-label.active {
+    background-color: #2196F3;
+    color: #fff;
+    cursor: default;
+    opacity: 1;
+}
+.toggle-label.inactive {
+    background: transparent;
+    color: #e0e0e0;
+    cursor: pointer;
+    text-decoration: underline dotted;
+}
+.toggle-label[aria-disabled="true"] {
+    pointer-events: none;
+}
