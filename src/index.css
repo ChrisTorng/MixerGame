@@ -31,7 +31,13 @@ body {
   position: fixed;
   top: 0;
   right: 0;
-  z-index: 1000;
+  z-index: 1000; /* below restart button */
+  display: block;
+  width: 80px;
+  height: 80px;
+  /* Restrict clickable area to the visible triangle */
+  -webkit-clip-path: polygon(100% 0, 0 0, 100% 100%);
+          clip-path: polygon(100% 0, 0 0, 100% 100%);
 }
 .github-corner svg {
   fill: #151513; /* corner background */
@@ -81,6 +87,8 @@ body {
     font-size: 14px;
     border-radius: 5px;
     cursor: pointer;
+    position: relative;
+    z-index: 2000; /* ensure above github-corner */
 }
 
 #restartBtn:disabled {
