@@ -1,7 +1,7 @@
 
 # MixerGame 混音遊戲
 
-[線上展示 Live Demo](https://christorng.github.io/MixerGame/src/)
+[線上展示 Live Demo](https://christorng.idv.tw/MixerGame/src/)
 
 MixerGame 是一款網頁音訊混音訓練遊戲。玩家需調整 6 軌音量，盡量還原隱藏的目標設定，訓練混音技巧。
 
